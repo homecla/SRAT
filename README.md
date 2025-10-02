@@ -2,6 +2,7 @@
 
 A single-file web application that simplifies the ISO 27001-compliant risk assessment process. Build for fun and  "vibe coding".
 
+
 ## Features
 
 ### 🎯 Core Functionality
