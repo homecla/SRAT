@@ -1,0 +1,2529 @@
+<!DOCTYPE html>
+<html lang="en">
+<!-- 
+Copyright @ 2026 Claudio Messineo
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+You should have received a copy of the GNU General Public License along with this program. If not, see <https://www.gnu.org/licenses/>. 
+-->
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' fonts.googleapis.com; font-src 'self' fonts.gstatic.com; connect-src 'self'; img-src 'self' data:; frame-src 'none'; object-src 'none'; base-uri 'self';">
+    <title>SRAT - Simplified Risk Assessment Register & Treatment</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-color: #6366f1;
+            --primary-hover: #5855eb;
+            --secondary-color: #8b5cf6;
+            --background-dark: #0f172a;
+            --surface-dark: #1e293b;
+            --surface-light: #334155;
+            --text-primary: #f8fafc;
+            --text-secondary: #cbd5e1;
+            --text-muted: #94a3b8;
+            --border-color: #475569;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+            --border-radius: 12px;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--background-dark);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        /* Header */
+        .header {
+            background: var(--surface-dark);
+            border-bottom: 1px solid var(--border-color);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(8px);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .user-info {
+            background: var(--surface-light);
+            padding: 0.5rem 1rem;
+            border-radius: var(--border-radius);
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        /* Main Layout */
+        .main-content {
+            min-height: calc(100vh - 80px);
+            padding: 2rem 0;
+        }
+
+        .section {
+            display: none;
+            background: var(--surface-dark);
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        .section-header {
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .section-title {
+            font-size: 2rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        .section-subtitle {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: var(--border-radius);
+            font-family: inherit;
+            font-size: 0.875rem;
+            font-weight: 500;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: center;
+            justify-content: center;
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-hover);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-secondary {
+            background: var(--surface-light);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-secondary:hover {
+            background: var(--border-color);
+        }
+
+        .btn-success {
+            background: var(--success-color);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #059669;
+        }
+
+        .btn-lg {
+            padding: 1rem 2rem;
+            font-size: 1rem;
+        }
+
+        /* Landing Page */
+        .landing {
+            text-align: center;
+            padding: 4rem 0;
+        }
+
+        .hero-title {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-subtitle {
+            font-size: 1.25rem;
+            color: var(--text-secondary);
+            margin-bottom: 3rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        /* Forms */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            background: var(--surface-light);
+            color: var(--text-primary);
+            font-family: inherit;
+            font-size: 0.875rem;
+            transition: border-color 0.2s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        .form-select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            background: var(--surface-light);
+            color: var(--text-primary);
+            font-family: inherit;
+            font-size: 0.875rem;
+            cursor: pointer;
+        }
+
+        /* Progress Indicator */
+        .progress-indicator {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 2rem;
+        }
+
+        .progress-step {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: var(--border-radius);
+            font-size: 0.875rem;
+            margin: 0 0.25rem;
+            transition: all 0.2s ease;
+        }
+
+        .progress-step.completed {
+            background: var(--success-color);
+            color: white;
+        }
+
+        .progress-step.active {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .progress-step.pending {
+            background: var(--surface-light);
+            color: var(--text-muted);
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            backdrop-filter: blur(4px);
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: var(--surface-dark);
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            width: 90%;
+            max-width: 500px;
+            box-shadow: var(--shadow-lg);
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+            margin-top: 1.5rem;
+        }
+
+        /* Selection Lists */
+        .selection-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .selection-column {
+            background: var(--surface-light);
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+        }
+
+        .selection-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+
+        .item-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .item-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem;
+            margin-bottom: 0.5rem;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        .item-checkbox:hover {
+            background: var(--surface-dark);
+        }
+
+        .item-checkbox.selected {
+            background: rgba(99, 102, 241, 0.1);
+            border: 1px solid var(--primary-color);
+        }
+
+        .checkbox-input {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--primary-color);
+        }
+
+        .item-label {
+            flex: 1;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .item-description {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            margin-top: 0.25rem;
+        }
+
+        /* Navigation */
+        .section-navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        /* Slider Styles */
+        .slider {
+            flex: 1;
+            -webkit-appearance: none;
+            height: 6px;
+            border-radius: 3px;
+            background: var(--surface-dark);
+            outline: none;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            cursor: pointer;
+        }
+
+        .slider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            cursor: pointer;
+            border: none;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 0.5rem;
+            }
+
+            .hero-title {
+                font-size: 2rem;
+            }
+
+            .hero-subtitle {
+                font-size: 1rem;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .selection-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .modal-content {
+                margin: 1rem;
+                padding: 1.5rem;
+            }
+
+            .section-navigation {
+                flex-direction: column;
+                gap: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-shield-alt"></i>
+                    SRAT
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            <!-- Progress Indicator -->
+            <div class="progress-indicator" id="progressIndicator" style="display: none;">
+                <div class="progress-step" data-step="1">
+                    <i class="fas fa-play"></i>
+                    <span>Start</span>
+                </div>
+                <div class="progress-step" data-step="2">
+                    <i class="fas fa-list"></i>
+                    <span>Assets & Threats</span>
+                </div>
+                <div class="progress-step" data-step="3">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Assessment</span>
+                </div>
+                <div class="progress-step" data-step="4">
+                    <i class="fas fa-shield-alt"></i>
+                    <span>Treatment</span>
+                </div>
+                <div class="progress-step" data-step="5">
+                    <i class="fas fa-download"></i>
+                    <span>Export</span>
+                </div>
+            </div>
+
+            <!-- Landing Section -->
+            <section id="landingSection" class="section active">
+                <div class="landing">
+                    <h1 class="hero-title">Simplified Risk Assessment</h1>
+                    <p class="hero-subtitle">
+                        Streamline your ISO 27001-compliant risk assessment process with our intuitive, 
+                        guided approach designed for small to medium-sized businesses.
+                    </p>
+                    <div class="action-buttons">
+                        <button class="btn btn-primary btn-lg" onclick="showNewAssessmentModal()">
+                            <i class="fas fa-plus"></i>
+                            Start New Assessment
+                        </button>
+                        <button class="btn btn-secondary btn-lg" onclick="console.log('Load button clicked'); loadExistingAssessment()">
+                            <i class="fas fa-folder-open"></i>
+                            Load Existing Assessment
+                        </button>
+                        <button class="btn btn-secondary btn-lg" onclick="console.log('Import CSV button clicked'); showImportCSVModal()">
+                            <i class="fas fa-file-csv"></i>
+                            Import CSV File
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Asset & Threat Selection Section -->
+            <section id="selectionSection" class="section">
+                <div class="section-header">
+                    <h2 class="section-title">Define Asset-Threat Combinations</h2>
+                    <p class="section-subtitle">Select assets and assign specific threats to each one independently</p>
+                </div>
+
+                <!-- Asset-Threat Builder -->
+                <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 2rem; margin-bottom: 2rem;">
+                    <!-- Asset Selection Panel -->
+                    <div class="selection-column">
+                        <h3 class="selection-title">
+                            <i class="fas fa-database"></i>
+                            Available Assets
+                        </h3>
+                        <div class="item-list" id="availableAssetsList" style="max-height: 300px;">
+                            <!-- Available assets will be populated by JavaScript -->
+                        </div>
+                        <div class="form-group" style="margin-top: 1rem;">
+                            <label class="form-label">Add Custom Asset:</label>
+                            <div style="display: flex; gap: 0.5rem;">
+                                <input type="text" class="form-input" id="customAsset" placeholder="Enter custom asset name">
+                                <button class="btn btn-secondary" onclick="addCustomAsset()">Add</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Asset-Threat Associations Panel -->
+                    <div class="selection-column">
+                        <h3 class="selection-title">
+                            <i class="fas fa-link"></i>
+                            Asset-Threat Associations
+                        </h3>
+                        <div id="assetThreatAssociations" style="max-height: 400px; overflow-y: auto;">
+                            <div style="text-align: center; color: var(--text-muted); padding: 2rem;">
+                                Click on assets to start defining their threats
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Threat Selection Modal -->
+                <div id="threatSelectionModal" class="modal">
+                    <div class="modal-content" style="max-width: 600px;">
+                        <div class="modal-header">
+                            <h3 class="modal-title" id="threatModalTitle">Select Threats for Asset</h3>
+                            <p id="threatModalSubtitle">Choose the threats that apply to this specific asset</p>
+                        </div>
+                        <div style="max-height: 300px; overflow-y: auto; margin-bottom: 1rem;">
+                            <div id="availableThreatsForAsset">
+                                <!-- Available threats will be populated -->
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Add Custom Threat for this Asset:</label>
+                            <div style="display: flex; gap: 0.5rem;">
+                                <input type="text" class="form-input" id="customThreatForAsset" placeholder="Enter custom threat name">
+                                <button class="btn btn-secondary" onclick="addCustomThreatForAsset()">Add</button>
+                            </div>
+                        </div>
+                        <div class="modal-actions">
+                            <button class="btn btn-secondary" onclick="closeThreatModal()">Cancel</button>
+                            <button class="btn btn-primary" onclick="saveThreatSelection()">Save Threats</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section-navigation">
+                    <button class="btn btn-secondary" onclick="goToSection('landingSection')">
+                        <i class="fas fa-arrow-left"></i>
+                        Back
+                    </button>
+                    <button class="btn btn-primary" onclick="goToAssessment()">
+                        Next: Assessment
+                        <i class="fas fa-arrow-right"></i>
+                    </button>
+                </div>
+            </section>
+
+            <!-- Risk Assessment Section -->
+            <section id="assessmentSection" class="section">
+                <div class="section-header">
+                    <h2 class="section-title">Risk Assessment</h2>
+                    <p class="section-subtitle">Evaluate the likelihood and impact of each risk scenario</p>
+                </div>
+
+                <div id="riskTableContainer">
+                    <!-- Risk table will be populated by JavaScript -->
+                </div>
+
+                <div class="section-navigation">
+                    <button class="btn btn-secondary" onclick="goToSection('selectionSection')">
+                        <i class="fas fa-arrow-left"></i>
+                        Back
+                    </button>
+                    <button class="btn btn-primary" onclick="goToTreatment()">
+                        Next: Treatment
+                        <i class="fas fa-arrow-right"></i>
+                    </button>
+                </div>
+            </section>
+
+            <!-- Risk Treatment Section -->
+            <section id="treatmentSection" class="section">
+                <div class="section-header">
+                    <h2 class="section-title">Risk Treatment</h2>
+                    <p class="section-subtitle">Define treatment strategies and controls for each identified risk</p>
+                </div>
+
+                <div id="treatmentContainer">
+                    <!-- Treatment options will be populated by JavaScript -->
+                </div>
+
+                <div class="section-navigation">
+                    <button class="btn btn-secondary" onclick="goToSection('assessmentSection')">
+                        <i class="fas fa-arrow-left"></i>
+                        Back
+                    </button>
+                    <button class="btn btn-primary" onclick="goToExport()">
+                        Next: Export
+                        <i class="fas fa-arrow-right"></i>
+                    </button>
+                </div>
+            </section>
+
+            <!-- Export Section -->
+            <section id="exportSection" class="section">
+                <div class="section-header">
+                    <h2 class="section-title">Export Risk Register</h2>
+                    <p class="section-subtitle">Generate and download your comprehensive risk assessment report</p>
+                </div>
+
+                <div style="text-align: center;">
+                    <div style="margin-bottom: 2rem;">
+                        <h3>Assessment Summary</h3>
+                        <div id="assessmentSummary">
+                            <!-- Summary will be populated by JavaScript -->
+                        </div>
+                    </div>
+                    
+                    <div class="action-buttons">
+                        <button class="btn btn-success btn-lg" onclick="exportToCSV()">
+                            <i class="fas fa-download"></i>
+                            Export to CSV
+                        </button>
+                        <button class="btn btn-secondary btn-lg" onclick="console.log('Import Different CSV button clicked'); showImportCSVModal()">
+                            <i class="fas fa-file-csv"></i>
+                            Import Different CSV
+                        </button>
+                        <button class="btn btn-primary btn-lg" onclick="saveAssessment()">
+                            <i class="fas fa-save"></i>
+                            Save Assessment
+                        </button>
+                    </div>
+                </div>
+
+                <div class="section-navigation">
+                    <button class="btn btn-secondary" onclick="goToSection('treatmentSection')">
+                        <i class="fas fa-arrow-left"></i>
+                        Back
+                    </button>
+                    <button class="btn btn-secondary" onclick="startNewAssessment()">
+                        <i class="fas fa-plus"></i>
+                        New Assessment
+                    </button>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- New Assessment Modal -->
+    <div id="newAssessmentModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Create New Assessment</h3>
+                <p>Enter a name for your risk assessment project</p>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Assessment Name:</label>
+                <input type="text" class="form-input" id="assessmentName" placeholder="e.g., Q4 2024 Risk Assessment">
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                <button class="btn btn-primary" onclick="createNewAssessment()">
+                    <i class="fas fa-play"></i>
+                    Start Assessment
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Import CSV Modal -->
+    <div id="importCSVModal" class="modal">
+        <div class="modal-content" style="max-width: 600px;">
+            <div class="modal-header">
+                <h3 class="modal-title">Import CSV Risk Assessment</h3>
+                <p>Upload a previously exported risk assessment CSV file to continue working on it</p>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Select CSV File:</label>
+                <input type="file" class="form-input" id="csvFileInput" accept=".csv" onchange="handleCSVFileSelect()">
+                <small style="color: var(--text-muted); font-size: 0.75rem; margin-top: 0.5rem; display: block;">
+                    Expected format: Risk ID, Asset, Threat, Vulnerability, Impact, Likelihood, Risk Level, Treatment, Controls, Notes<br>
+                    <em>Note: Legacy format with 'Score' column is also supported</em>
+                </small>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Assessment Name:</label>
+                <input type="text" class="form-input" id="importAssessmentName" placeholder="e.g., Imported Risk Assessment">
+            </div>
+            <div id="csvPreview" style="display: none; margin: 1rem 0;">
+                <h4 style="color: var(--text-primary); margin-bottom: 0.5rem;">Preview (First 5 rows):</h4>
+                <div style="background: var(--surface-dark); padding: 1rem; border-radius: var(--border-radius); max-height: 200px; overflow-y: auto; font-family: monospace; font-size: 0.75rem;">
+                    <div id="csvPreviewContent"></div>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                <button class="btn btn-primary" id="importCSVButton" onclick="importCSVAssessment()" disabled>
+                    <i class="fas fa-file-import"></i>
+                    Import Assessment
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global application state
+        let currentAssessment = {
+            id: null,
+            name: '',
+            assetThreatPairs: [], // Changed from selectedAssets/selectedThreats to pairs
+            riskAssessments: [],
+            treatmentPlans: [],
+            createdAt: null,
+            updatedAt: null
+        };
+        
+        // Track current modal state
+        let currentAssetForThreatSelection = null;
+
+        // Security utilities for input sanitization and validation
+        const SecurityUtils = {
+            // HTML escaping to prevent XSS
+            escapeHtml: function(unsafe) {
+                if (typeof unsafe !== 'string') return '';
+                return unsafe
+                    .replace(/&/g, "&amp;")
+                    .replace(/</g, "&lt;")
+                    .replace(/>/g, "&gt;")
+                    .replace(/"/g, "&quot;")
+                    .replace(/'/g, "&#039;");
+            },
+            
+            // Validate and sanitize file names
+            sanitizeFileName: function(fileName) {
+                if (typeof fileName !== 'string') return 'unknown';
+                return fileName
+                    .replace(/[^a-zA-Z0-9._-]/g, '_')
+                    .substring(0, 100); // Limit length
+            },
+            
+            // Validate CSV content for malicious patterns
+            validateCSVContent: function(content) {
+                if (typeof content !== 'string') {
+                    throw new Error('Invalid file content');
+                }
+                
+                // Check file size (limit to 5MB)
+                if (content.length > 5 * 1024 * 1024) {
+                    throw new Error('File too large. Maximum size is 5MB.');
+                }
+                
+                // Check for potentially malicious patterns
+                const maliciousPatterns = [
+                    /<script[^>]*>.*?<\/script>/gi,
+                    /javascript:/gi,
+                    /data:text\/html/gi,
+                    /vbscript:/gi,
+                    /on\w+\s*=/gi, // on-event handlers
+                    /@import/gi,
+                    /expression\s*\(/gi
+                ];
+                
+                for (let pattern of maliciousPatterns) {
+                    if (pattern.test(content)) {
+                        throw new Error('File contains potentially malicious content');
+                    }
+                }
+                
+                return true;
+            },
+            
+            // Validate JSON before parsing
+            safeJSONParse: function(jsonString) {
+                try {
+                    if (typeof jsonString !== 'string') {
+                        throw new Error('Invalid JSON input type');
+                    }
+                    
+                    // Basic validation before parsing
+                    if (jsonString.length > 1024 * 1024) { // 1MB limit
+                        throw new Error('JSON data too large');
+                    }
+                    
+                    const parsed = JSON.parse(jsonString);
+                    
+                    // Validate parsed object structure
+                    if (parsed && typeof parsed === 'object') {
+                        return parsed;
+                    } else {
+                        throw new Error('Invalid JSON structure');
+                    }
+                } catch (e) {
+                    console.error('JSON parsing error:', e);
+                    throw new Error('Invalid or malformed data');
+                }
+            },
+            
+            // Validate and sanitize text input
+            sanitizeInput: function(input, maxLength = 1000) {
+                if (typeof input !== 'string') return '';
+                return input
+                    .trim()
+                    .substring(0, maxLength)
+                    .replace(/[<>"'&]/g, function(match) {
+                        const entities = {
+                            '<': '&lt;',
+                            '>': '&gt;',
+                            '"': '&quot;',
+                            "'": '&#039;',
+                            '&': '&amp;'
+                        };
+                        return entities[match];
+                    });
+            },
+            
+            // Validate assessment data structure
+            validateAssessmentData: function(data) {
+                const requiredFields = ['id', 'name', 'assetThreatPairs', 'riskAssessments', 'treatmentPlans'];
+                
+                if (!data || typeof data !== 'object') {
+                    throw new Error('Invalid assessment data structure');
+                }
+                
+                for (let field of requiredFields) {
+                    if (!(field in data)) {
+                        throw new Error(`Missing required field: ${field}`);
+                    }
+                }
+                
+                // Validate arrays
+                if (!Array.isArray(data.assetThreatPairs) || 
+                    !Array.isArray(data.riskAssessments) || 
+                    !Array.isArray(data.treatmentPlans)) {
+                    throw new Error('Invalid data array structure');
+                }
+                
+                return true;
+            }
+        };
+
+        // Pre-defined assets
+        const predefinedAssets = [
+            { id: 'asset_customer_db', name: 'Customer Database', category: 'Digital', description: 'Database containing customer personal and financial information' },
+            { id: 'asset_employee_laptops', name: 'Employee Laptops', category: 'Digital', description: 'Corporate laptops used by employees for daily work' },
+            { id: 'asset_web_server', name: 'Web Server', category: 'Digital', description: 'Primary web server hosting company applications' },
+            { id: 'asset_ip', name: 'Intellectual Property', category: 'Digital', description: 'Trade secrets, patents, and proprietary information' },
+            { id: 'asset_financial_records', name: 'Financial Records', category: 'Digital', description: 'Accounting data, financial statements, and tax records' },
+            { id: 'asset_cloud_services', name: 'Cloud Services (SaaS)', category: 'Digital', description: 'Third-party cloud applications and services' },
+            { id: 'asset_company_website', name: 'Company Website', category: 'Digital', description: 'Public-facing website and associated databases' },
+            { id: 'asset_email_system', name: 'Email System', category: 'Digital', description: 'Corporate email infrastructure and archives' },
+            { id: 'asset_backup_systems', name: 'Backup Systems', category: 'Digital', description: 'Data backup and recovery systems' },
+            { id: 'asset_network_infrastructure', name: 'Network Infrastructure', category: 'Digital', description: 'Routers, switches, and network equipment' },
+            { id: 'asset_office_building', name: 'Office Building', category: 'Physical', description: 'Physical office premises and facilities' },
+            { id: 'asset_server_room', name: 'Server Room', category: 'Physical', description: 'Dedicated server and network equipment room' },
+            { id: 'asset_physical_documents', name: 'Physical Documents', category: 'Physical', description: 'Paper-based records and documentation' },
+            { id: 'asset_mobile_devices', name: 'Mobile Devices', category: 'Physical', description: 'Smartphones and tablets used for business' },
+            { id: 'asset_storage_media', name: 'Storage Media', category: 'Physical', description: 'USB drives, external hard drives, and portable storage' },
+            { id: 'asset_employees', name: 'Employees', category: 'Human', description: 'Full-time and part-time staff members' },
+            { id: 'asset_contractors', name: 'Contractors', category: 'Human', description: 'External contractors and temporary workers' },
+            { id: 'asset_third_party_vendors', name: 'Third-Party Vendors', category: 'Human', description: 'External service providers and suppliers' }
+        ];
+
+        // Risk Matrix Implementation
+        // Likelihood: Very Low(1), Low(2), Medium(3), High(4), Very High(5)
+        // Impact: Insignificant(1), Minor(2), Moderate(3), Significant(4), Catastrophic(5)
+        const riskMatrix = {
+            1: { 1: 'Low', 2: 'Low', 3: 'Low', 4: 'Low', 5: 'Low' },           // Very Low likelihood
+            2: { 1: 'Low', 2: 'Low', 3: 'Moderate', 4: 'Moderate', 5: 'Moderate' }, // Low likelihood
+            3: { 1: 'Low', 2: 'Moderate', 3: 'Moderate', 4: 'High', 5: 'High' },    // Medium likelihood
+            4: { 1: 'Moderate', 2: 'High', 3: 'High', 4: 'Very High', 5: 'Very High' }, // High likelihood
+            5: { 1: 'High', 2: 'High', 3: 'Very High', 4: 'Very High', 5: 'Very High' } // Very High likelihood
+        };
+        
+        const riskLevels = {
+            'Low': { color: 'var(--success-color)', priority: 1 },
+            'Moderate': { color: 'var(--warning-color)', priority: 2 },
+            'High': { color: 'var(--danger-color)', priority: 3 },
+            'Very High': { color: '#8B0000', priority: 4 } // Dark red for Very High
+        };
+        
+        function getRiskLevel(impact, likelihood) {
+            return riskMatrix[likelihood][impact] || 'Low';
+        }
+        
+        function getRiskColor(riskLevel) {
+            return riskLevels[riskLevel]?.color || 'var(--success-color)';
+        }
+
+        // Pre-defined asset-threat mappings for auto-selection
+        const assetThreatMappings = {
+            'asset_customer_db': ['threat_016', 'threat_019', 'threat_004', 'threat_041', 'threat_043', 'threat_012'], // SQL Injection, NoSQL Injection, Ransomware, Compromised Credentials, Malicious Insider Data Theft, Data Leakage (Wipers)
+            'asset_employee_laptops': ['threat_001', 'threat_002', 'threat_005', 'threat_009', 'threat_004', 'threat_029', 'threat_050', 'threat_039', 'threat_046'], // Virus, Worm, Spyware, Keylogger, Ransomware, Phishing, Theft of Equipment, Unpatched Software, Unintentional Data Disclosure
+            'asset_web_server': ['threat_015', 'threat_016', 'threat_018', 'threat_017', 'threat_039', 'threat_040', 'threat_036'], // DDoS, SQL Injection, XSS, Command Injection, Unpatched Software, Zero-Day Exploits, Supply Chain Attacks
+            'asset_ip': ['threat_043', 'threat_045', 'threat_046', 'threat_012', 'threat_036'], // Malicious Insider Data Theft, Insider Espionage, Unintentional Data Disclosure, Data Leakage (Wipers), Supply Chain Attacks
+            'asset_financial_records': ['threat_004', 'threat_043', 'threat_044', 'threat_041', 'threat_029'], // Ransomware, Malicious Insider Data Theft, Insider Sabotage, Compromised Credentials, Phishing
+            'asset_cloud_services': ['threat_042', 'threat_041', 'threat_036', 'threat_059'], // Cloud Misconfiguration, Compromised Credentials, Supply Chain Attacks, Insecure Network Access Management
+            'asset_company_website': ['threat_015', 'threat_016', 'threat_018', 'threat_026', 'threat_039'], // DDoS, SQL Injection, XSS, DNS Spoofing, Unpatched Software
+            'asset_email_system': ['threat_029', 'threat_030', 'threat_046', 'threat_001'], // Phishing, Spear Phishing, Unintentional Data Disclosure, Virus
+            'asset_backup_systems': ['threat_004', 'threat_044', 'threat_050', 'threat_053', 'threat_055'], // Ransomware, Insider Sabotage, Theft of Equipment, Natural Disaster, Inadequate Data Disposal
+            'asset_network_infrastructure': ['threat_025', 'threat_028', 'threat_015', 'threat_059'], // Man-in-the-Middle, Wi-Fi Eavesdropping, DDoS, Insecure Network Access Management
+            'asset_office_building': ['threat_048', 'threat_049', 'threat_050', 'threat_051', 'threat_052', 'threat_053', 'threat_054'], // Piggybacking, Tailgating, Theft, Vandalism, Arson, Natural Disaster, Environmental Conditions
+            'asset_server_room': ['threat_048', 'threat_049', 'threat_050', 'threat_054'], // Piggybacking, Tailgating, Theft of Equipment, Environmental Conditions
+            'asset_physical_documents': ['threat_050', 'threat_048', 'threat_046', 'threat_055'], // Theft, Unauthorized Access (Piggybacking), Unintentional Data Disclosure, Inadequate Data Disposal
+            'asset_mobile_devices': ['threat_050', 'threat_028', 'threat_001', 'threat_029', 'threat_032'], // Theft/Loss, Wi-Fi Eavesdropping, Malware (Virus), Phishing, Smishing
+            'asset_storage_media': ['threat_055', 'threat_050', 'threat_001', 'threat_046'], // Inadequate Data Disposal, Theft/Loss, Malware (Virus), Unintentional Data Disclosure
+            'asset_employees': ['threat_047', 'threat_029', 'threat_043'], // Human Error & Negligence, Phishing & Social Engineering, Malicious Insider Threats
+            'asset_contractors': ['threat_043', 'threat_047', 'threat_036'], // Malicious Insider Threats, Human Error & Negligence, Supply Chain Attacks
+            'asset_third_party_vendors': ['threat_036', 'threat_038', 'threat_043', 'threat_059'] // Supply Chain Attacks, Hijacking of Vendor Systems, Insider Threats, Insecure Network Access Management
+        };
+
+        // Pre-defined threats with comprehensive catalog
+        const predefinedThreats = [
+            // Cyber and Technological Threats
+            { id: 'threat_001', name: 'Virus', category: 'Cyber and Technological', description: 'Malicious code that infects a host application, replicates itself, and spreads when the host is executed.', ciaImpact: 'I, A', applicableAssets: ['asset_employee_laptops', 'asset_web_server', 'asset_email_system', 'asset_network_infrastructure', 'asset_mobile_devices'], recommendedControls: ['A.8.7', 'A.8.8', 'A.6.3'] },
+            { id: 'threat_002', name: 'Worm', category: 'Cyber and Technological', description: 'A self-replicating malware that spreads autonomously through networks by exploiting vulnerabilities, without needing a host file.', ciaImpact: 'I, A', applicableAssets: ['asset_employee_laptops', 'asset_web_server', 'asset_network_infrastructure', 'asset_email_system'], recommendedControls: ['A.8.7', 'A.8.20', 'A.8.21'] },
+            { id: 'threat_004', name: 'Ransomware', category: 'Cyber and Technological', description: 'A type of malware that encrypts a user\'s files and systems, denying access until a ransom is paid for the decryption key.', ciaImpact: 'A, C, I', applicableAssets: ['asset_customer_db', 'asset_employee_laptops', 'asset_financial_records', 'asset_backup_systems', 'asset_server_room'], recommendedControls: ['A.8.13', 'A.8.7', 'A.7.5', 'A.5.30'] },
+            { id: 'threat_005', name: 'Spyware', category: 'Cyber and Technological', description: 'Secretly monitors user activity, tracks browsing habits, and collects sensitive information like passwords and credit card details.', ciaImpact: 'C', applicableAssets: ['asset_employee_laptops', 'asset_mobile_devices', 'asset_customer_db'], recommendedControls: ['A.8.7', 'A.8.12', 'A.6.3'] },
+            { id: 'threat_006', name: 'Adware', category: 'Cyber and Technological', description: 'Delivers unwanted advertisements and can track user behavior to build profiles for targeted advertising.', ciaImpact: 'C', applicableAssets: ['asset_employee_laptops', 'asset_mobile_devices', 'asset_company_website'], recommendedControls: ['A.8.23', 'A.8.7', 'A.6.3'] },
+            { id: 'threat_007', name: 'Rootkit', category: 'Cyber and Technological', description: 'A sophisticated type of malware that provides attackers with unauthorized access while remaining hidden from detection.', ciaImpact: 'C, I, A', applicableAssets: ['asset_employee_laptops', 'asset_web_server', 'asset_network_infrastructure'], recommendedControls: ['A.8.7', 'A.8.16', 'A.8.8'] },
+            { id: 'threat_008', name: 'Botnet', category: 'Cyber and Technological', description: 'A network of internet-connected devices infected with malware, controlled by an attacker to perform malicious tasks like DDoS attacks.', ciaImpact: 'A', applicableAssets: ['asset_employee_laptops', 'asset_mobile_devices', 'asset_network_infrastructure'], recommendedControls: ['A.8.7', 'A.8.20', 'A.8.16'] },
+            { id: 'threat_009', name: 'Keylogger', category: 'Cyber and Technological', description: 'Records keystrokes to capture sensitive information such as usernames, passwords, and other confidential data.', ciaImpact: 'C', applicableAssets: ['asset_employee_laptops', 'asset_mobile_devices'], recommendedControls: ['A.8.7', 'A.8.5', 'A.6.3'] },
+            { id: 'threat_010', name: 'Fileless Malware', category: 'Cyber and Technological', description: 'Operates in memory without installing files on the device, making it difficult for traditional antivirus software to detect.', ciaImpact: 'C, I, A', applicableAssets: ['asset_employee_laptops', 'asset_web_server', 'asset_network_infrastructure'], recommendedControls: ['A.8.7', 'A.8.16', 'A.8.8'] },
+            { id: 'threat_011', name: 'Cryptojacker', category: 'Cyber and Technological', description: 'Hijacks a device\'s computing power to illegally mine cryptocurrencies without the user\'s consent.', ciaImpact: 'A', applicableAssets: ['asset_employee_laptops', 'asset_web_server', 'asset_mobile_devices'], recommendedControls: ['A.8.7', 'A.8.16', 'A.8.9'] },
+            { id: 'threat_012', name: 'Wipers', category: 'Cyber and Technological', description: 'A form of malware designed to permanently and irreversibly destroy data on a system.', ciaImpact: 'I, A', applicableAssets: ['asset_customer_db', 'asset_financial_records', 'asset_backup_systems', 'asset_web_server'], recommendedControls: ['A.8.13', 'A.8.7', 'A.5.15'] },
+            { id: 'threat_013', name: 'Scareware', category: 'Cyber and Technological', description: 'Displays fake security alerts and warnings to trick users into downloading or paying for fraudulent software.', ciaImpact: 'A', applicableAssets: ['asset_employee_laptops', 'asset_mobile_devices'], recommendedControls: ['A.6.3', 'A.8.7', 'A.8.23'] },
+            { id: 'threat_014', name: 'Logic Bomb', category: 'Cyber and Technological', description: 'Malicious code that lies dormant until a specific condition is met, at which point it executes its destructive payload.', ciaImpact: 'I, A', applicableAssets: ['asset_web_server', 'asset_customer_db', 'asset_financial_records'], recommendedControls: ['A.8.25', 'A.8.28', 'A.8.32'] },
+            { id: 'threat_015', name: 'Distributed Denial of Service (DDoS)', category: 'Cyber and Technological', description: 'Overwhelms an online service with a flood of traffic from multiple sources, making it unavailable to legitimate users.', ciaImpact: 'A', applicableAssets: ['asset_web_server', 'asset_company_website', 'asset_network_infrastructure', 'asset_cloud_services'], recommendedControls: ['A.8.20', 'A.5.29', 'A.8.21', 'A.8.14'] },
+            { id: 'threat_016', name: 'SQL Injection (SQLi)', category: 'Cyber and Technological', description: 'An attacker injects malicious SQL queries into a web form to manipulate a database, allowing data theft, modification, or deletion.', ciaImpact: 'C, I, A', applicableAssets: ['asset_customer_db', 'asset_web_server', 'asset_company_website', 'asset_financial_records'], recommendedControls: ['A.8.26', 'A.8.29', 'A.5.15', 'A.8.21'] },
+            { id: 'threat_017', name: 'Command Injection', category: 'Cyber and Technological', description: 'Malicious input is injected into an application to execute arbitrary commands on the host operating system, giving the attacker control.', ciaImpact: 'C, I, A', applicableAssets: ['asset_web_server', 'asset_company_website', 'asset_network_infrastructure'], recommendedControls: ['A.8.26', 'A.8.28', 'A.8.29'] },
+            { id: 'threat_018', name: 'Cross-Site Scripting (XSS)', category: 'Cyber and Technological', description: 'An attacker injects malicious scripts into a trusted website, which are then executed by other users\' browsers to steal data or redirect them.', ciaImpact: 'C, I', applicableAssets: ['asset_web_server', 'asset_company_website'], recommendedControls: ['A.8.26', 'A.8.28', 'A.8.29'] },
+            { id: 'threat_019', name: 'NoSQL Injection', category: 'Cyber and Technological', description: 'Exploits vulnerabilities in applications to inject malicious queries into NoSQL databases, leading to unauthorized data access.', ciaImpact: 'C, I, A', applicableAssets: ['asset_customer_db', 'asset_web_server', 'asset_cloud_services'], recommendedControls: ['A.8.26', 'A.8.29', 'A.5.15'] },
+            { id: 'threat_020', name: 'LDAP Injection', category: 'Cyber and Technological', description: 'Manipulates LDAP statements to gain unauthorized access to directory services, potentially leading to privilege escalation.', ciaImpact: 'C, I', applicableAssets: ['asset_web_server', 'asset_network_infrastructure', 'asset_email_system'], recommendedControls: ['A.8.26', 'A.5.15', 'A.8.5'] },
+            { id: 'threat_021', name: 'XPath Injection', category: 'Cyber and Technological', description: 'Injects malformed inputs into web applications that use XML databases, allowing attackers to access or alter sensitive data.', ciaImpact: 'C, I, A', applicableAssets: ['asset_web_server', 'asset_company_website'], recommendedControls: ['A.8.26', 'A.8.28', 'A.8.29'] },
+            { id: 'threat_022', name: 'Mail Command Injection', category: 'Cyber and Technological', description: 'Exploits email servers by injecting malicious code into email messages, allowing attackers to send spam or override server restrictions.', ciaImpact: 'C, I, A', applicableAssets: ['asset_email_system'], recommendedControls: ['A.8.26', 'A.8.21', 'A.8.29'] },
+            { id: 'threat_023', name: 'CRLF Injection', category: 'Cyber and Technological', description: 'Injects Carriage Return and Line Feed code sequences into web protocols, enabling data extraction and cookie modification.', ciaImpact: 'C, I', applicableAssets: ['asset_web_server', 'asset_company_website'], recommendedControls: ['A.8.26', 'A.8.28', 'A.8.29'] },
+            { id: 'threat_024', name: 'Host Header Injection', category: 'Cyber and Technological', description: 'Exploits vulnerabilities in a web application\'s host header to inject code directly into a virtual host, potentially granting access to sensitive data.', ciaImpact: 'C', applicableAssets: ['asset_web_server', 'asset_company_website'], recommendedControls: ['A.8.26', 'A.8.28', 'A.8.29'] },
+            { id: 'threat_025', name: 'Man-in-the-Middle (MitM)', category: 'Cyber and Technological', description: 'An attacker secretly relays and potentially alters the communication between two parties who believe they are communicating directly.', ciaImpact: 'C, I', applicableAssets: ['asset_network_infrastructure', 'asset_email_system', 'asset_mobile_devices', 'asset_cloud_services'], recommendedControls: ['A.8.24', 'A.8.20', 'A.8.21'] },
+            { id: 'threat_026', name: 'DNS Spoofing', category: 'Cyber and Technological', description: 'An attacker redirects users to a malicious website by corrupting the Domain Name Server (DNS) records.', ciaImpact: 'A, C', applicableAssets: ['asset_network_infrastructure', 'asset_company_website'], recommendedControls: ['A.8.20', 'A.8.21', 'A.8.22'] },
+            { id: 'threat_027', name: 'HTTPS Spoofing', category: 'Cyber and Technological', description: 'Uses "HTTPS" in a URL to trick a browser into believing a malicious website is secure and legitimate.', ciaImpact: 'C', applicableAssets: ['asset_company_website', 'asset_employees'], recommendedControls: ['A.6.3', 'A.8.24', 'A.8.23'] },
+            { id: 'threat_028', name: 'Wi-Fi Eavesdropping', category: 'Cyber and Technological', description: 'An attacker sets up a fraudulent Wi-Fi connection to monitor the activity of connected users and intercept data.', ciaImpact: 'C', applicableAssets: ['asset_employee_laptops', 'asset_mobile_devices', 'asset_employees'], recommendedControls: ['A.8.24', 'A.8.20', 'A.6.3'] },
+            { id: 'threat_029', name: 'Phishing', category: 'Cyber and Technological', description: 'Fraudulent emails or messages that appear legitimate, encouraging users to reveal sensitive information or click malicious links.', ciaImpact: 'C', applicableAssets: ['asset_employees', 'asset_email_system', 'asset_customer_db', 'asset_financial_records'], recommendedControls: ['A.6.3', 'A.8.12', 'A.8.21', 'A.5.29'] },
+            { id: 'threat_030', name: 'Spear Phishing', category: 'Cyber and Technological', description: 'A highly targeted form of phishing that focuses on specific individuals or organizations.', ciaImpact: 'C', applicableAssets: ['asset_employees', 'asset_contractors', 'asset_email_system'], recommendedControls: ['A.6.3', 'A.8.12', 'A.8.21'] },
+            { id: 'threat_031', name: 'Vishing (Voice Phishing)', category: 'Cyber and Technological', description: 'Uses phone calls to trick individuals into disclosing sensitive data or granting unauthorized access to a system.', ciaImpact: 'C', applicableAssets: ['asset_employees', 'asset_contractors'], recommendedControls: ['A.6.3', 'A.6.2', 'A.5.2'] },
+            { id: 'threat_032', name: 'Smishing (SMS Phishing)', category: 'Cyber and Technological', description: 'Uses text messages as a means of deceiving a victim into clicking a malicious link or revealing information.', ciaImpact: 'C', applicableAssets: ['asset_employees', 'asset_mobile_devices'], recommendedControls: ['A.6.3', 'A.8.12', 'A.7.9'] },
+            { id: 'threat_033', name: 'Pretexting', category: 'Cyber and Technological', description: 'An attacker creates a fabricated scenario or pretext to extract sensitive information from a target.', ciaImpact: 'C', applicableAssets: ['asset_employees', 'asset_contractors', 'asset_third_party_vendors'], recommendedControls: ['A.6.3', 'A.6.1', 'A.5.21'] },
+            { id: 'threat_034', name: 'Baiting', category: 'Cyber and Technological', description: 'Lures a user into a social engineering trap with the promise of something attractive, like a free gift card or a media download.', ciaImpact: 'C, I', applicableAssets: ['asset_employees', 'asset_employee_laptops', 'asset_mobile_devices'], recommendedControls: ['A.6.3', 'A.8.7', 'A.7.9'] },
+            { id: 'threat_035', name: 'Quid Pro Quo', category: 'Cyber and Technological', description: 'An attacker promises a service or benefit in exchange for confidential information or system credentials.', ciaImpact: 'C', applicableAssets: ['asset_employees', 'asset_contractors'], recommendedControls: ['A.6.3', 'A.6.2', 'A.5.2'] },
+            { id: 'threat_036', name: 'Exploitation of Open-Source Dependencies', category: 'Cyber and Technological', description: 'Attackers compromise third-party libraries and frameworks, introducing vulnerabilities that affect all applications that use them.', ciaImpact: 'C, I, A', applicableAssets: ['asset_web_server', 'asset_company_website', 'asset_cloud_services'], recommendedControls: ['A.8.25', 'A.8.29', 'A.5.21'] },
+            { id: 'threat_037', name: 'Malicious Code in Automated Updates', category: 'Cyber and Technological', description: 'Attackers inject malicious code into a vendor\'s software updates, which are then automatically installed by customers.', ciaImpact: 'C, I, A', applicableAssets: ['asset_employee_laptops', 'asset_web_server', 'asset_network_infrastructure'], recommendedControls: ['A.8.32', 'A.8.29', 'A.5.21'] },
+            { id: 'threat_038', name: 'Hijacking of Vendor Systems', category: 'Cyber and Technological', description: 'Attackers breach a trusted vendor\'s network to gain access to customer databases or source code repositories.', ciaImpact: 'C, I, A', applicableAssets: ['asset_third_party_vendors', 'asset_cloud_services'], recommendedControls: ['A.5.21', 'A.8.16', 'A.8.3'] },
+            { id: 'threat_039', name: 'Unpatched Software and Systems', category: 'Cyber and Technological', description: 'Failure to apply security updates and patches, leaving known vulnerabilities open for exploitation.', ciaImpact: 'C, I, A', applicableAssets: ['asset_employee_laptops', 'asset_web_server', 'asset_network_infrastructure', 'asset_mobile_devices'], recommendedControls: ['A.8.8', 'A.8.32', 'A.8.9'] },
+            { id: 'threat_040', name: 'Zero-Day Exploits', category: 'Cyber and Technological', description: 'An attack that takes advantage of a previously unknown software vulnerability for which no patch is yet available.', ciaImpact: 'C, I, A', applicableAssets: ['asset_employee_laptops', 'asset_web_server', 'asset_network_infrastructure', 'asset_mobile_devices'], recommendedControls: ['A.8.16', 'A.8.22', 'A.5.29'] },
+            { id: 'threat_041', name: 'Compromised Credentials', category: 'Cyber and Technological', description: 'An attacker steals or obtains valid usernames and passwords, gaining unauthorized access to accounts and systems.', ciaImpact: 'C, I', applicableAssets: ['asset_customer_db', 'asset_email_system', 'asset_cloud_services', 'asset_financial_records'], recommendedControls: ['A.8.5', 'A.5.15', 'A.8.16'] },
+            { id: 'threat_042', name: 'Cloud Misconfiguration', category: 'Cyber and Technological', description: 'Human error or lack of knowledge leading to insecure cloud settings, such as publicly exposed storage buckets.', ciaImpact: 'C', applicableAssets: ['asset_cloud_services', 'asset_backup_systems'], recommendedControls: ['A.8.9', 'A.8.32', 'A.6.3'] },
+            
+            // Human Factor & Insider Threats
+            { id: 'threat_043', name: 'Malicious Insider Data Theft', category: 'Human Factor & Insider', description: 'A disgruntled or financially motivated employee steals confidential data or intellectual property.', ciaImpact: 'C, I', applicableAssets: ['asset_customer_db', 'asset_financial_records', 'asset_ip', 'asset_employees', 'asset_contractors'], recommendedControls: ['A.5.15', 'A.8.16', 'A.6.1'] },
+            { id: 'threat_044', name: 'Insider Sabotage', category: 'Human Factor & Insider', description: 'An employee intentionally misuses system access to damage or disrupt an organization\'s operations.', ciaImpact: 'I, A', applicableAssets: ['asset_web_server', 'asset_network_infrastructure', 'asset_backup_systems', 'asset_employees'], recommendedControls: ['A.5.15', 'A.8.16', 'A.6.1'] },
+            { id: 'threat_045', name: 'Insider Espionage', category: 'Human Factor & Insider', description: 'A person with authorized access steals information on behalf of a hostile third party, such as a competitor or foreign government.', ciaImpact: 'C, I', applicableAssets: ['asset_customer_db', 'asset_ip', 'asset_financial_records', 'asset_employees', 'asset_contractors'], recommendedControls: ['A.5.15', 'A.8.16', 'A.6.1'] },
+            { id: 'threat_046', name: 'Unintentional Data Disclosure', category: 'Human Factor & Insider', description: 'An employee accidentally emails sensitive information to the wrong recipient or mishandles confidential data.', ciaImpact: 'C', applicableAssets: ['asset_customer_db', 'asset_financial_records', 'asset_email_system', 'asset_physical_documents', 'asset_employees'], recommendedControls: ['A.6.3', 'A.8.12', 'A.8.3'] },
+            { id: 'threat_047', name: 'Human Error and Negligence', category: 'Human Factor & Insider', description: 'Unintentional actions such as using weak passwords, not following security protocols, or falling for a phishing scam.', ciaImpact: 'C, I, A', applicableAssets: ['asset_employees', 'asset_contractors', 'asset_customer_db', 'asset_financial_records'], recommendedControls: ['A.6.3', 'A.8.5', 'A.5.2'] },
+            { id: 'threat_048', name: 'Piggybacking', category: 'Human Factor & Insider', description: 'An unauthorized person gains access to a restricted physical area with the help or consent of an authorized employee.', ciaImpact: 'C, I, A', applicableAssets: ['asset_office_building', 'asset_server_room', 'asset_employees'], recommendedControls: ['A.7.2', 'A.6.3', 'A.7.4'] },
+            { id: 'threat_049', name: 'Tailgating', category: 'Human Factor & Insider', description: 'An unauthorized person follows closely behind an authorized individual to enter a restricted area.', ciaImpact: 'C, I, A', applicableAssets: ['asset_office_building', 'asset_server_room', 'asset_physical_documents'], recommendedControls: ['A.7.2', 'A.7.4', 'A.6.3'] },
+            
+            // Physical and Environmental Threats
+            { id: 'threat_050', name: 'Theft of Equipment', category: 'Physical and Environmental', description: 'The physical theft of mobile devices, laptops, or other hardware containing sensitive data.', ciaImpact: 'C, A', applicableAssets: ['asset_employee_laptops', 'asset_mobile_devices', 'asset_storage_media', 'asset_physical_documents'], recommendedControls: ['A.7.9', 'A.8.24', 'A.7.1'] },
+            { id: 'threat_051', name: 'Vandalism', category: 'Physical and Environmental', description: 'Intentional destruction of physical property and equipment, which can disrupt business operations.', ciaImpact: 'A, I', applicableAssets: ['asset_office_building', 'asset_server_room', 'asset_network_infrastructure'], recommendedControls: ['A.7.1', 'A.7.4', 'A.7.8'] },
+            { id: 'threat_052', name: 'Arson', category: 'Physical and Environmental', description: 'The intentional and malicious act of setting a fire, which can cause catastrophic damage to a facility and its assets.', ciaImpact: 'A, I', applicableAssets: ['asset_office_building', 'asset_server_room', 'asset_physical_documents', 'asset_network_infrastructure'], recommendedControls: ['A.7.5', 'A.7.1', 'A.5.30'] },
+            { id: 'threat_053', name: 'Natural Disaster', category: 'Physical and Environmental', description: 'Unpredictable events such as floods, earthquakes, or tornados that can destroy infrastructure and interrupt operations.', ciaImpact: 'A, I', applicableAssets: ['asset_office_building', 'asset_server_room', 'asset_physical_documents', 'asset_network_infrastructure'], recommendedControls: ['A.7.5', 'A.8.14', 'A.5.30'] },
+            { id: 'threat_054', name: 'Environmental Conditions', category: 'Physical and Environmental', description: 'Threats posed by extreme temperatures, high humidity, or other environmental factors that can damage hardware.', ciaImpact: 'A, I', applicableAssets: ['asset_server_room', 'asset_network_infrastructure', 'asset_physical_documents'], recommendedControls: ['A.7.8', 'A.7.5', 'A.8.14'] },
+            
+            // Systemic and Procedural Threats
+            { id: 'threat_055', name: 'Inadequate Data Disposal', category: 'Systemic and Procedural', description: 'Failure to securely delete or destroy information on storage media, leading to potential data leakage.', ciaImpact: 'C', applicableAssets: ['asset_employee_laptops', 'asset_storage_media', 'asset_physical_documents', 'asset_mobile_devices'], recommendedControls: ['A.7.14', 'A.8.10', 'A.8.3'] },
+            { id: 'threat_056', name: 'Insufficient Asset Management', category: 'Systemic and Procedural', description: 'A lack of a complete and up-to-date inventory of all information assets, making it impossible to secure them effectively.', ciaImpact: 'C, I, A', applicableAssets: ['asset_customer_db', 'asset_employee_laptops', 'asset_network_infrastructure', 'asset_storage_media'], recommendedControls: ['A.8.3', 'A.5.2', 'A.8.16'] },
+            { id: 'threat_057', name: 'Lack of Change Management', category: 'Systemic and Procedural', description: 'Failure to control and document changes to IT systems and processes, leading to security flaws and misconfigurations.', ciaImpact: 'I, A', applicableAssets: ['asset_web_server', 'asset_network_infrastructure', 'asset_cloud_services'], recommendedControls: ['A.8.32', 'A.8.9', 'A.5.2'] },
+            { id: 'threat_058', name: 'No Business Continuity Plan', category: 'Systemic and Procedural', description: 'The absence of a plan to maintain critical business functions in the event of a disaster or disruption.', ciaImpact: 'A', applicableAssets: ['asset_customer_db', 'asset_financial_records', 'asset_backup_systems', 'asset_office_building'], recommendedControls: ['A.5.30', 'A.8.14', 'A.8.13'] },
+            { id: 'threat_059', name: 'Insecure Network Access Management', category: 'Systemic and Procedural', description: 'Allowing unauthorized or excessive access to network services and systems.', ciaImpact: 'C, I, A', applicableAssets: ['asset_network_infrastructure', 'asset_web_server', 'asset_customer_db', 'asset_email_system'], recommendedControls: ['A.5.15', 'A.8.20', 'A.8.22'] }
+        ];
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeApp();
+            populateAvailableAssetsList();
+            renderAssetThreatAssociations();
+        });
+
+        function initializeApp() {
+            console.log('SRAT Application initialized');
+        }
+
+        // CSV Import Functions
+        let csvData = null;
+        
+        function showImportCSVModal() {
+            console.log('Opening CSV Import Modal');
+            try {
+                const modal = document.getElementById('importCSVModal');
+                if (!modal) {
+                    console.error('Import CSV Modal not found!');
+                    alert('Import CSV Modal not found. Please refresh the page.');
+                    return;
+                }
+                modal.classList.add('active');
+                // Reset form
+                document.getElementById('csvFileInput').value = '';
+                document.getElementById('importAssessmentName').value = '';
+                document.getElementById('csvPreview').style.display = 'none';
+                document.getElementById('importCSVButton').disabled = true;
+                csvData = null;
+                console.log('CSV Import Modal opened successfully');
+            } catch (error) {
+                console.error('Error opening CSV Import Modal:', error);
+                alert('Error opening CSV Import Modal: ' + error.message);
+            }
+        }
+        
+        function handleCSVFileSelect() {
+            const fileInput = document.getElementById('csvFileInput');
+            const file = fileInput.files[0];
+            
+            if (!file) {
+                document.getElementById('csvPreview').style.display = 'none';
+                document.getElementById('importCSVButton').disabled = true;
+                return;
+            }
+            
+            // Enhanced file validation
+            try {
+                // Validate file type
+                if (!file.name.toLowerCase().endsWith('.csv')) {
+                    throw new Error('Please select a CSV file');
+                }
+                
+                // Validate file size (5MB limit)
+                if (file.size > 5 * 1024 * 1024) {
+                    throw new Error('File too large. Maximum size is 5MB.');
+                }
+                
+                // Validate MIME type
+                if (file.type && !['text/csv', 'application/csv', 'text/plain'].includes(file.type)) {
+                    throw new Error('Invalid file type. Please select a valid CSV file.');
+                }
+                
+                // Sanitize filename for display
+                const sanitizedFileName = SecurityUtils.sanitizeFileName(file.name);
+                console.log(`Processing file: ${sanitizedFileName}`);
+                
+            } catch (error) {
+                alert(error.message);
+                fileInput.value = '';
+                return;
+            }
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const csvText = e.target.result;
+                    
+                    // Security validation of file content
+                    SecurityUtils.validateCSVContent(csvText);
+                    
+                    csvData = parseCSV(csvText);
+                    
+                    if (csvData && csvData.length > 0) {
+                        displayCSVPreview(csvData);
+                        document.getElementById('importCSVButton').disabled = false;
+                        
+                        // Auto-fill assessment name if empty
+                        const nameInput = document.getElementById('importAssessmentName');
+                        if (!nameInput.value) {
+                            const fileName = SecurityUtils.sanitizeFileName(
+                                file.name.replace('.csv', '').replace(/_risk_register$/, '')
+                            );
+                            nameInput.value = `Imported: ${fileName}`;
+                        }
+                    }
+                } catch (error) {
+                    alert('Error reading CSV file: ' + error.message);
+                    console.error('CSV processing error:', error);
+                    fileInput.value = '';
+                    csvData = null;
+                }
+            };
+            
+            reader.onerror = function() {
+                alert('Error reading file. Please try again.');
+                fileInput.value = '';
+            };
+            
+            reader.readAsText(file);
+        }
+        
+        function parseCSV(csvText) {
+            // Additional security validation
+            if (typeof csvText !== 'string') {
+                throw new Error('Invalid CSV data type');
+            }
+            
+            const lines = csvText.trim().split('\n');
+            if (lines.length < 2) {
+                throw new Error('CSV file must have at least a header row and one data row');
+            }
+            
+            // Limit number of lines to prevent DoS
+            if (lines.length > 10000) {
+                throw new Error('CSV file too large. Maximum 10,000 rows allowed.');
+            }
+            
+            const headers = lines[0].split(',').map(h => h.replace(/"/g, '').trim());
+            const expectedHeaders = ['Risk ID', 'Asset', 'Threat', 'Vulnerability', 'Impact', 'Likelihood', 'Risk Level', 'Treatment', 'Controls', 'Notes'];
+            const oldHeaders = ['Risk ID', 'Asset', 'Threat', 'Vulnerability', 'Impact', 'Likelihood', 'Score', 'Treatment', 'Controls', 'Notes'];
+            
+            // Validate headers - support both new (Risk Level) and old (Score) formats
+            const hasNewFormat = expectedHeaders.slice(0, 7).every(header => 
+                headers.some(h => h.toLowerCase().includes(header.toLowerCase()))
+            );
+            const hasOldFormat = oldHeaders.slice(0, 7).every(header => 
+                headers.some(h => h.toLowerCase().includes(header.toLowerCase()))
+            );
+            
+            if (!hasNewFormat && !hasOldFormat) {
+                throw new Error('CSV file must contain the required columns: ' + expectedHeaders.slice(0, 7).join(', ') + ' OR ' + oldHeaders.slice(0, 7).join(', '));
+            }
+            
+            const data = [];
+            const isOldFormat = headers.some(h => h.toLowerCase().includes('score'));
+            
+            for (let i = 1; i < lines.length; i++) {
+                const line = lines[i].trim();
+                if (!line) continue;
+                
+                const values = parseCSVLine(line);
+                if (values.length >= 7) {
+                    try {
+                        // Sanitize and validate each field
+                        const riskId = SecurityUtils.sanitizeInput(values[0] || `risk_${i}`, 50);
+                        const asset = SecurityUtils.sanitizeInput(values[1] || 'Unknown Asset', 200);
+                        const threat = SecurityUtils.sanitizeInput(values[2] || 'Unknown Threat', 200);
+                        const vulnerability = SecurityUtils.sanitizeInput(values[3] || 'General vulnerability', 200);
+                        
+                        // Validate numerical inputs
+                        const impact = Math.max(1, Math.min(5, parseInt(values[4]) || 1));
+                        const likelihood = Math.max(1, Math.min(5, parseInt(values[5]) || 1));
+                        
+                        let riskLevel;
+                        if (isOldFormat) {
+                            // Convert old numerical score to new risk level
+                            const score = Math.max(1, Math.min(9, parseInt(values[6]) || 1));
+                            // Map old 1-9 scale to risk levels (approximate conversion)
+                            if (score >= 7) riskLevel = 'High';
+                            else if (score >= 4) riskLevel = 'Moderate';
+                            else riskLevel = 'Low';
+                        } else {
+                            // Validate risk level from new format
+                            const validRiskLevels = ['Low', 'Moderate', 'High', 'Very High'];
+                            riskLevel = validRiskLevels.includes(values[6]) ? values[6] : getRiskLevel(impact, likelihood);
+                        }
+                        
+                        // Validate treatment strategy
+                        const validTreatments = ['accept', 'mitigate', 'transfer', 'avoid'];
+                        const treatment = validTreatments.includes(values[7]?.toLowerCase()) ? 
+                            values[7].toLowerCase() : 'accept';
+                        
+                        // Sanitize controls and notes
+                        const controls = SecurityUtils.sanitizeInput(values[8] || '', 1000);
+                        const notes = SecurityUtils.sanitizeInput(values[9] || '', 2000);
+                        
+                        data.push({
+                            riskId,
+                            asset,
+                            threat,
+                            vulnerability,
+                            impact,
+                            likelihood,
+                            riskLevel,
+                            treatment,
+                            controls,
+                            notes
+                        });
+                    } catch (fieldError) {
+                        console.warn(`Error processing row ${i}:`, fieldError);
+                        // Continue processing other rows
+                        continue;
+                    }
+                }
+            }
+            
+            if (data.length === 0) {
+                throw new Error('No valid risk data found in CSV file');
+            }
+            
+            // Limit number of records to prevent memory issues
+            if (data.length > 5000) {
+                throw new Error('Too many records. Maximum 5,000 risk assessments allowed.');
+            }
+            
+            return data;
+        }
+        
+        function parseCSVLine(line) {
+            const result = [];
+            let current = '';
+            let inQuotes = false;
+            
+            for (let i = 0; i < line.length; i++) {
+                const char = line[i];
+                
+                if (char === '"') {
+                    inQuotes = !inQuotes;
+                } else if (char === ',' && !inQuotes) {
+                    result.push(current.trim());
+                    current = '';
+                } else {
+                    current += char;
+                }
+            }
+            
+            result.push(current.trim());
+            return result;
+        }
+        
+        function displayCSVPreview(data) {
+            const previewContent = document.getElementById('csvPreviewContent');
+            const previewRows = data.slice(0, 5);
+            
+            // Clear previous content
+            previewContent.innerHTML = '';
+            
+            // Create table element securely
+            const table = document.createElement('table');
+            table.style.cssText = 'width: 100%; font-size: 0.7rem;';
+            
+            // Create header row
+            const headerRow = document.createElement('tr');
+            headerRow.style.cssText = 'background: var(--surface-light); font-weight: bold;';
+            
+            const headers = ['Asset', 'Threat', 'Impact', 'Likelihood', 'Risk Level', 'Treatment'];
+            headers.forEach(headerText => {
+                const th = document.createElement('td');
+                th.textContent = headerText;
+                headerRow.appendChild(th);
+            });
+            table.appendChild(headerRow);
+            
+            // Create data rows with sanitized content
+            previewRows.forEach(row => {
+                const tr = document.createElement('tr');
+                
+                const assetCell = document.createElement('td');
+                assetCell.textContent = SecurityUtils.escapeHtml(row.asset);
+                tr.appendChild(assetCell);
+                
+                const threatCell = document.createElement('td');
+                threatCell.textContent = SecurityUtils.escapeHtml(row.threat);
+                tr.appendChild(threatCell);
+                
+                const impactCell = document.createElement('td');
+                impactCell.textContent = row.impact;
+                tr.appendChild(impactCell);
+                
+                const likelihoodCell = document.createElement('td');
+                likelihoodCell.textContent = row.likelihood;
+                tr.appendChild(likelihoodCell);
+                
+                const riskLevelCell = document.createElement('td');
+                riskLevelCell.textContent = row.riskLevel;
+                riskLevelCell.style.cssText = `background: ${getRiskColor(row.riskLevel)}; color: white; padding: 0.2rem; border-radius: 3px; text-align: center;`;
+                tr.appendChild(riskLevelCell);
+                
+                const treatmentCell = document.createElement('td');
+                treatmentCell.textContent = SecurityUtils.escapeHtml(row.treatment);
+                tr.appendChild(treatmentCell);
+                
+                table.appendChild(tr);
+            });
+            
+            previewContent.appendChild(table);
+            
+            // Add row count information
+            if (data.length > 5) {
+                const countInfo = document.createElement('p');
+                countInfo.style.cssText = 'margin-top: 0.5rem; color: var(--text-muted);';
+                countInfo.textContent = `... and ${data.length - 5} more rows`;
+                previewContent.appendChild(countInfo);
+            }
+            
+            document.getElementById('csvPreview').style.display = 'block';
+        }
+        
+        function importCSVAssessment() {
+            if (!csvData || csvData.length === 0) {
+                alert('No valid CSV data to import');
+                return;
+            }
+            
+            const assessmentNameInput = document.getElementById('importAssessmentName');
+            const assessmentName = assessmentNameInput.value.trim();
+            
+            // Enhanced input validation
+            if (!assessmentName) {
+                alert('Please enter an assessment name');
+                assessmentNameInput.focus();
+                return;
+            }
+            
+            if (assessmentName.length < 3) {
+                alert('Assessment name must be at least 3 characters long');
+                assessmentNameInput.focus();
+                return;
+            }
+            
+            if (assessmentName.length > 100) {
+                alert('Assessment name must be less than 100 characters');
+                assessmentNameInput.focus();
+                return;
+            }
+            
+            // Sanitize assessment name
+            const sanitizedName = SecurityUtils.sanitizeInput(assessmentName, 100);
+            
+            try {
+                // Create new assessment from CSV data with enhanced validation
+                const assessment = createAssessmentFromCSV(csvData, sanitizedName);
+                
+                currentAssessment = assessment;
+                closeModal();
+                
+                // Navigate to treatment section since we have complete risk data
+                updateProgressIndicator(4);
+                goToSection('treatmentSection');
+                generateTreatmentPlans();
+                
+                // Auto-save the imported assessment
+                autoSaveAssessment();
+                
+                alert(`Successfully imported ${csvData.length} risk scenarios!`);
+                
+            } catch (error) {
+                console.error('Import error:', error);
+                alert('Error importing CSV data: ' + error.message);
+            }
+        }
+        
+        function createAssessmentFromCSV(data, name) {
+            const assessment = {
+                id: 'assessment_' + Math.random().toString(36).substr(2, 9),
+                name: name,
+                assetThreatPairs: [],
+                riskAssessments: [],
+                treatmentPlans: [],
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString()
+            };
+            
+            // Group data by asset-threat combinations
+            const assetThreatMap = new Map();
+            
+            data.forEach((row, index) => {
+                const assetName = row.asset;
+                const threatName = row.threat;
+                
+                // Find or create asset
+                let asset = predefinedAssets.find(a => a.name.toLowerCase() === assetName.toLowerCase());
+                if (!asset) {
+                    asset = {
+                        id: 'imported_asset_' + Math.random().toString(36).substr(2, 9),
+                        name: assetName,
+                        category: 'Imported',
+                        description: 'Asset imported from CSV file'
+                    };
+                    predefinedAssets.push(asset);
+                }
+                
+                // Find or create threat
+                let threat = predefinedThreats.find(t => t.name.toLowerCase() === threatName.toLowerCase());
+                if (!threat) {
+                    threat = {
+                        id: 'imported_threat_' + Math.random().toString(36).substr(2, 9),
+                        name: threatName,
+                        category: 'Imported',
+                        description: 'Threat imported from CSV file',
+                        ciaImpact: 'C, I, A',
+                        applicableAssets: [asset.id],
+                        recommendedControls: []
+                    };
+                    predefinedThreats.push(threat);
+                }
+                
+                // Group by asset
+                const assetKey = asset.id;
+                if (!assetThreatMap.has(assetKey)) {
+                    assetThreatMap.set(assetKey, {
+                        asset: asset,
+                        threats: []
+                    });
+                }
+                
+                const assetGroup = assetThreatMap.get(assetKey);
+                if (!assetGroup.threats.find(t => t.id === threat.id)) {
+                    assetGroup.threats.push(threat);
+                }
+                
+                // Create risk assessment
+                const riskAssessment = {
+                    id: row.riskId || `imported_risk_${index + 1}`,
+                    asset: asset,
+                    threat: threat,
+                    impact: Math.max(1, Math.min(5, row.impact)),
+                    likelihood: Math.max(1, Math.min(5, row.likelihood)),
+                    riskLevel: row.riskLevel || getRiskLevel(row.impact, row.likelihood)
+                };
+                
+                assessment.riskAssessments.push(riskAssessment);
+                
+                // Create treatment plan
+                const treatmentPlan = {
+                    riskId: riskAssessment.id,
+                    treatment: ['accept', 'mitigate', 'transfer', 'avoid'].includes(row.treatment.toLowerCase()) ? row.treatment.toLowerCase() : 'accept',
+                    controls: row.controls ? row.controls.split(';').map(c => c.trim()).filter(c => c) : [],
+                    notes: row.notes || ''
+                };
+                
+                assessment.treatmentPlans.push(treatmentPlan);
+            });
+            
+            // Convert map to asset-threat pairs
+            assessment.assetThreatPairs = Array.from(assetThreatMap.values());
+            
+            return assessment;
+        }
+
+        // Modal functions
+        function showNewAssessmentModal() {
+            document.getElementById('newAssessmentModal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.querySelectorAll('.modal').forEach(modal => {
+                modal.classList.remove('active');
+            });
+        }
+
+        function createNewAssessment() {
+            const assessmentNameInput = document.getElementById('assessmentName');
+            const assessmentName = assessmentNameInput.value.trim();
+            
+            // Enhanced input validation
+            if (!assessmentName) {
+                alert('Please enter an assessment name');
+                assessmentNameInput.focus();
+                return;
+            }
+            
+            // Validate assessment name
+            if (assessmentName.length < 3) {
+                alert('Assessment name must be at least 3 characters long');
+                assessmentNameInput.focus();
+                return;
+            }
+            
+            if (assessmentName.length > 100) {
+                alert('Assessment name must be less than 100 characters');
+                assessmentNameInput.focus();
+                return;
+            }
+            
+            // Sanitize assessment name
+            const sanitizedName = SecurityUtils.sanitizeInput(assessmentName, 100);
+            
+            // Check for malicious patterns in name
+            const suspiciousPatterns = [/<script/i, /javascript:/i, /on\w+=/i];
+            if (suspiciousPatterns.some(pattern => pattern.test(assessmentName))) {
+                alert('Assessment name contains invalid characters');
+                assessmentNameInput.focus();
+                return;
+            }
+            
+            // Initialize new assessment with sanitized data
+            currentAssessment = {
+                id: 'assessment_' + Math.random().toString(36).substr(2, 9),
+                name: sanitizedName,
+                assetThreatPairs: [],
+                riskAssessments: [],
+                treatmentPlans: [],
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString()
+            };
+
+            closeModal();
+            updateProgressIndicator(2);
+            goToSection('selectionSection');
+        }
+
+        async function saveAssessment() {
+            if (!currentAssessment.id) {
+                alert('No assessment to save');
+                return;
+            }
+            
+            currentAssessment.updatedAt = new Date().toISOString();
+            
+            // Save to localStorage
+            localStorage.setItem(`srat_assessment_${currentAssessment.id}`, JSON.stringify(currentAssessment));
+            alert('Assessment saved successfully!');
+        }
+        
+        async function loadExistingAssessment() {
+            console.log('Loading existing assessments from localStorage');
+            try {
+                // Load from localStorage
+                const localKeys = Object.keys(localStorage).filter(key => key.startsWith('srat_assessment_'));
+                const assessments = localKeys.map(key => {
+                    try {
+                        return JSON.parse(localStorage.getItem(key));
+                    } catch {
+                        return null;
+                    }
+                }).filter(assessment => assessment !== null);
+                
+                if (assessments.length === 0) {
+                    alert('No saved assessments found');
+                    return;
+                }
+                
+                // Create assessment selection modal
+                showAssessmentSelectionModal(assessments);
+                
+            } catch (error) {
+                console.error('Error loading assessments:', error);
+                alert('Error loading assessments');
+            }
+        }
+
+        // Navigation functions
+        function goToSection(sectionId) {
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.remove('active');
+            });
+            document.getElementById(sectionId).classList.add('active');
+            
+            // Show/hide progress indicator
+            const progressIndicator = document.getElementById('progressIndicator');
+            if (sectionId === 'landingSection') {
+                progressIndicator.style.display = 'none';
+            } else {
+                progressIndicator.style.display = 'flex';
+            }
+        }
+
+        function updateProgressIndicator(activeStep) {
+            document.querySelectorAll('.progress-step').forEach((step, index) => {
+                const stepNumber = index + 1;
+                step.classList.remove('completed', 'active', 'pending');
+                
+                if (stepNumber < activeStep) {
+                    step.classList.add('completed');
+                } else if (stepNumber === activeStep) {
+                    step.classList.add('active');
+                } else {
+                    step.classList.add('pending');
+                }
+            });
+        }
+
+        // Asset and Threat selection with independent asset-threat associations
+        function populateAvailableAssetsList() {
+            const availableAssetsList = document.getElementById('availableAssetsList');
+            availableAssetsList.innerHTML = '';
+            
+            predefinedAssets.forEach(asset => {
+                const assetItem = createClickableAssetItem(asset);
+                availableAssetsList.appendChild(assetItem);
+            });
+        }
+        
+        function createClickableAssetItem(asset) {
+            const itemDiv = document.createElement('div');
+            itemDiv.className = 'item-checkbox';
+            itemDiv.style.cursor = 'pointer';
+            
+            // Check if this asset already has associations
+            const hasAssociations = currentAssessment.assetThreatPairs.some(pair => pair.asset.id === asset.id);
+            if (hasAssociations) {
+                itemDiv.classList.add('selected');
+            }
+            
+            itemDiv.innerHTML = `
+                <div style="display: flex; align-items: center; width: 100%;">
+                    <i class="fas fa-${getAssetIcon(asset.category)}" style="margin-right: 0.75rem; color: var(--primary-color);"></i>
+                    <div style="flex: 1;">
+                        <div class="item-label">${asset.name}</div>
+                        <div class="item-description">${asset.description}</div>
+                    </div>
+                    ${hasAssociations ? '<i class="fas fa-check" style="color: var(--success-color);"></i>' : ''}
+                </div>
+            `;
+            
+            itemDiv.onclick = () => openThreatSelectionModal(asset);
+            return itemDiv;
+        }
+        
+        function getAssetIcon(category) {
+            switch(category) {
+                case 'Digital': return 'laptop';
+                case 'Physical': return 'building';
+                case 'Human': return 'users';
+                default: return 'cube';
+            }
+        }
+        
+        function openThreatSelectionModal(asset) {
+            currentAssetForThreatSelection = asset;
+            
+            document.getElementById('threatModalTitle').textContent = `Select Threats for ${asset.name}`;
+            document.getElementById('threatModalSubtitle').textContent = `Choose the specific threats that apply to ${asset.name}`;
+            
+            // Get current threats for this asset
+            const currentPair = currentAssessment.assetThreatPairs.find(pair => pair.asset.id === asset.id);
+            let currentThreats = currentPair ? currentPair.threats : [];
+            
+            // If no existing threats, pre-populate with asset-specific threats
+            if (currentThreats.length === 0 && assetThreatMappings[asset.id]) {
+                const preDefinedThreatIds = assetThreatMappings[asset.id];
+                currentThreats = preDefinedThreatIds.map(threatId => 
+                    predefinedThreats.find(threat => threat.id === threatId)
+                ).filter(threat => threat); // Filter out any undefined threats
+            }
+            
+            // Populate available threats with checkboxes
+            const threatsContainer = document.getElementById('availableThreatsForAsset');
+            threatsContainer.innerHTML = '';
+            
+            predefinedThreats.forEach(threat => {
+                const threatItem = createThreatCheckboxItem(threat, currentThreats);
+                threatsContainer.appendChild(threatItem);
+            });
+            
+            document.getElementById('threatSelectionModal').classList.add('active');
+        }
+        
+        function createThreatCheckboxItem(threat, selectedThreats) {
+            const itemDiv = document.createElement('div');
+            itemDiv.className = 'item-checkbox';
+            
+            const isSelected = selectedThreats.some(t => t.id === threat.id);
+            if (isSelected) {
+                itemDiv.classList.add('selected');
+            }
+            
+            // Create CIA impact badges
+            const ciaImpacts = threat.ciaImpact ? threat.ciaImpact.split(', ') : [];
+            const ciaBadges = ciaImpacts.map(impact => {
+                const color = impact === 'C' ? 'var(--danger-color)' : 
+                             impact === 'I' ? 'var(--warning-color)' : 
+                             impact === 'A' ? 'var(--primary-color)' : 'var(--text-muted)';
+                const label = impact === 'C' ? 'Confidentiality' : 
+                             impact === 'I' ? 'Integrity' : 
+                             impact === 'A' ? 'Availability' : impact;
+                return `<span style="background: ${color}; color: white; padding: 0.15rem 0.4rem; border-radius: 4px; font-size: 0.65rem; margin-right: 0.25rem;" title="${label}">${impact}</span>`;
+            }).join('');
+            
+            itemDiv.innerHTML = `
+                <input type="checkbox" class="checkbox-input" id="threat_${threat.id}" ${isSelected ? 'checked' : ''} onchange="toggleThreatInModal('${threat.id}')">
+                <div style="flex: 1;">
+                    <div class="item-label" style="display: flex; align-items: center; justify-content: space-between;">
+                        <span>${threat.name}</span>
+                        <div>${ciaBadges}</div>
+                    </div>
+                    <div class="item-description">${threat.description}</div>
+                    <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem;">
+                        <i class="fas fa-tag"></i> ${threat.category}
+                    </div>
+                </div>
+            `;
+            
+            return itemDiv;
+        }
+        
+        function toggleThreatInModal(threatId) {
+            const checkbox = document.getElementById(`threat_${threatId}`);
+            const itemDiv = checkbox.closest('.item-checkbox');
+            
+            if (checkbox.checked) {
+                itemDiv.classList.add('selected');
+            } else {
+                itemDiv.classList.remove('selected');
+            }
+        }
+        
+        function closeThreatModal() {
+            document.getElementById('threatSelectionModal').classList.remove('active');
+            currentAssetForThreatSelection = null;
+        }
+        
+        function saveThreatSelection() {
+            if (!currentAssetForThreatSelection) return;
+            
+            // Get selected threats from modal
+            const selectedThreats = [];
+            const checkboxes = document.querySelectorAll('#availableThreatsForAsset .checkbox-input:checked');
+            
+            checkboxes.forEach(checkbox => {
+                const threatId = checkbox.id.replace('threat_', '');
+                const threat = predefinedThreats.find(t => t.id === threatId);
+                if (threat) {
+                    selectedThreats.push(threat);
+                }
+            });
+            
+            // Update or create asset-threat pair
+            const existingPairIndex = currentAssessment.assetThreatPairs.findIndex(pair => pair.asset.id === currentAssetForThreatSelection.id);
+            
+            if (selectedThreats.length > 0) {
+                const assetThreatPair = {
+                    asset: currentAssetForThreatSelection,
+                    threats: selectedThreats
+                };
+                
+                if (existingPairIndex >= 0) {
+                    currentAssessment.assetThreatPairs[existingPairIndex] = assetThreatPair;
+                } else {
+                    currentAssessment.assetThreatPairs.push(assetThreatPair);
+                }
+            } else {
+                // Remove pair if no threats selected
+                if (existingPairIndex >= 0) {
+                    currentAssessment.assetThreatPairs.splice(existingPairIndex, 1);
+                }
+            }
+            
+            closeThreatModal();
+            populateAvailableAssetsList(); // Refresh to show updated status
+            renderAssetThreatAssociations();
+            
+            // Auto-save changes
+            autoSaveAssessment();
+        }
+        
+        function renderAssetThreatAssociations() {
+            const container = document.getElementById('assetThreatAssociations');
+            
+            if (currentAssessment.assetThreatPairs.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; color: var(--text-muted); padding: 2rem;">
+                        <i class="fas fa-info-circle" style="font-size: 2rem; margin-bottom: 1rem; opacity: 0.5;"></i>
+                        <p>Click on assets to start defining their threats</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            let html = '';
+            currentAssessment.assetThreatPairs.forEach((pair, index) => {
+                html += `
+                    <div style="background: var(--surface-dark); padding: 1rem; border-radius: var(--border-radius); margin-bottom: 1rem; border-left: 3px solid var(--primary-color);">
+                        <div style="display: flex; justify-content: between; align-items: center; margin-bottom: 0.75rem;">
+                            <h4 style="color: var(--text-primary); margin: 0; flex: 1;">
+                                <i class="fas fa-${getAssetIcon(pair.asset.category)}"></i>
+                                ${pair.asset.name}
+                            </h4>
+                            <div style="display: flex; gap: 0.5rem;">
+                                <button class="btn btn-secondary" style="padding: 0.25rem 0.5rem; font-size: 0.75rem;" onclick="openThreatSelectionModal(${JSON.stringify(pair.asset).replace(/"/g, '&quot;')})">
+                                    <i class="fas fa-edit"></i> Edit
+                                </button>
+                                <button class="btn btn-secondary" style="padding: 0.25rem 0.5rem; font-size: 0.75rem; background: var(--danger-color);" onclick="removeAssetThreatPair(${index})">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+                            ${pair.threats.map(threat => `
+                                <span style="background: var(--surface-light); padding: 0.25rem 0.5rem; border-radius: 6px; font-size: 0.75rem; color: var(--text-secondary); border-left: 3px solid var(--warning-color);">
+                                    <i class="fas fa-exclamation-triangle" style="color: var(--warning-color); margin-right: 0.25rem;"></i>
+                                    ${threat.name}
+                                    <span style="font-size: 0.65rem; opacity: 0.7; margin-left: 0.25rem;">(${threat.category})</span>
+                                </span>
+                            `).join('')}
+                        </div>
+                        <div style="margin-top: 0.5rem; font-size: 0.75rem; color: var(--text-muted);">
+                            ${pair.threats.length} threat${pair.threats.length !== 1 ? 's' : ''} defined
+                        </div>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+        
+        function removeAssetThreatPair(index) {
+            if (confirm('Are you sure you want to remove this asset and all its associated threats?')) {
+                currentAssessment.assetThreatPairs.splice(index, 1);
+                populateAvailableAssetsList();
+                renderAssetThreatAssociations();
+            }
+        }
+
+        function createSelectableItem(item, type) {
+            const itemDiv = document.createElement('div');
+            itemDiv.className = 'item-checkbox';
+            itemDiv.innerHTML = `
+                <input type="checkbox" class="checkbox-input" id="${item.id}" onchange="toggleSelection('${item.id}', '${type}')">
+                <div>
+                    <div class="item-label">${item.name}</div>
+                    <div class="item-description">${item.description}</div>
+                </div>
+            `;
+            return itemDiv;
+        }
+
+        function toggleSelection(itemId, type) {
+            // This function is kept for backward compatibility but not used in new interface
+            console.log('Legacy function called:', itemId, type);
+        }
+
+        function addCustomAsset() {
+            const customAssetInput = document.getElementById('customAsset');
+            const assetName = customAssetInput.value.trim();
+            
+            // Enhanced input validation
+            if (!assetName) {
+                alert('Please enter an asset name');
+                customAssetInput.focus();
+                return;
+            }
+            
+            if (assetName.length < 2) {
+                alert('Asset name must be at least 2 characters long');
+                customAssetInput.focus();
+                return;
+            }
+            
+            if (assetName.length > 100) {
+                alert('Asset name must be less than 100 characters');
+                customAssetInput.focus();
+                return;
+            }
+            
+            // Sanitize asset name
+            const sanitizedName = SecurityUtils.sanitizeInput(assetName, 100);
+            
+            // Check for duplicate assets
+            if (predefinedAssets.some(asset => asset.name.toLowerCase() === sanitizedName.toLowerCase())) {
+                alert('An asset with this name already exists');
+                customAssetInput.focus();
+                return;
+            }
+
+            const customAsset = {
+                id: 'custom_asset_' + Math.random().toString(36).substr(2, 9),
+                name: sanitizedName,
+                category: 'Custom',
+                description: 'Custom asset added by user'
+            };
+
+            predefinedAssets.push(customAsset);
+            populateAvailableAssetsList();
+            customAssetInput.value = '';
+        }
+
+        function addCustomThreat() {
+            // This is now handled in the modal
+            console.log('Use addCustomThreatForAsset instead');
+        }
+        
+        function addCustomThreatForAsset() {
+            const customThreatInput = document.getElementById('customThreatForAsset');
+            const threatName = customThreatInput.value.trim();
+            
+            if (!threatName) {
+                alert('Please enter a threat name');
+                return;
+            }
+
+            const customThreat = {
+                id: 'custom_threat_' + Math.random().toString(36).substr(2, 9),
+                name: threatName,
+                category: 'Custom',
+                description: 'Custom threat added by user'
+            };
+
+            predefinedThreats.push(customThreat);
+            
+            // Refresh the modal content
+            if (currentAssetForThreatSelection) {
+                const currentPair = currentAssessment.assetThreatPairs.find(pair => pair.asset.id === currentAssetForThreatSelection.id);
+                const currentThreats = currentPair ? currentPair.threats : [];
+                
+                const threatsContainer = document.getElementById('availableThreatsForAsset');
+                predefinedThreats.forEach(threat => {
+                    if (threat.id === customThreat.id) {
+                        const threatItem = createThreatCheckboxItem(threat, currentThreats);
+                        threatsContainer.appendChild(threatItem);
+                    }
+                });
+            }
+            
+            customThreatInput.value = '';
+        }
+
+        // Risk Assessment functionality
+        function goToAssessment() {
+            if (currentAssessment.assetThreatPairs.length === 0) {
+                alert('Please define at least one asset-threat combination before proceeding');
+                return;
+            }
+            
+            // Count total risk scenarios
+            const totalRisks = currentAssessment.assetThreatPairs.reduce((total, pair) => total + pair.threats.length, 0);
+            if (totalRisks === 0) {
+                alert('Please select at least one threat for your assets before proceeding');
+                return;
+            }
+
+            generateRiskMatrix();
+            updateProgressIndicator(3);
+            goToSection('assessmentSection');
+        }
+
+        function generateRiskMatrix() {
+            currentAssessment.riskAssessments = [];
+            
+            const tableHTML = `
+                <div style="overflow-x: auto;">
+                    <table style="width: 100%; border-collapse: collapse; background: var(--surface-light); border-radius: var(--border-radius); overflow: hidden; box-shadow: var(--shadow-md); min-width: 700px;">
+                        <thead>
+                            <tr style="background: var(--surface-dark);">
+                                <th style="padding: 1rem; text-align: left; border-bottom: 1px solid var(--border-color); font-weight: 600; color: var(--text-primary);">Asset</th>
+                                <th style="padding: 1rem; text-align: left; border-bottom: 1px solid var(--border-color); font-weight: 600; color: var(--text-primary);">Threat</th>
+                                <th style="padding: 1rem; text-align: left; border-bottom: 1px solid var(--border-color); font-weight: 600; color: var(--text-primary);">Impact (1-5)</th>
+                                <th style="padding: 1rem; text-align: left; border-bottom: 1px solid var(--border-color); font-weight: 600; color: var(--text-primary);">Likelihood (1-5)</th>
+                                <th style="padding: 1rem; text-align: left; border-bottom: 1px solid var(--border-color); font-weight: 600; color: var(--text-primary);">Risk Level</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${generateRiskRows()}
+                        </tbody>
+                    </table>
+                    <div style="margin-top: 1rem; padding: 1rem; background: var(--surface-light); border-radius: var(--border-radius);">
+                        <h4 style="margin-bottom: 0.5rem; color: var(--text-primary);">Risk Matrix Legend:</h4>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 0.5rem; font-size: 0.875rem;">
+                            <div><strong>Impact:</strong> 1=Insignificant, 2=Minor, 3=Moderate, 4=Significant, 5=Catastrophic</div>
+                            <div><strong>Likelihood:</strong> 1=Very Low, 2=Low, 3=Medium, 4=High, 5=Very High</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('riskTableContainer').innerHTML = tableHTML;
+        }
+
+        function generateRiskRows() {
+            let rows = '';
+            let riskId = 1;
+            
+            currentAssessment.assetThreatPairs.forEach(pair => {
+                pair.threats.forEach(threat => {
+                    const riskAssessment = {
+                        id: `risk_${riskId}`,
+                        asset: pair.asset,
+                        threat: threat,
+                        impact: 1,
+                        likelihood: 1,
+                        riskLevel: 'Low'
+                    };
+                    
+                    currentAssessment.riskAssessments.push(riskAssessment);
+                    
+                    rows += `
+                        <tr style="background: var(--surface-light);">
+                            <td style="padding: 1rem; border-bottom: 1px solid var(--border-color); color: var(--text-primary);">${pair.asset.name}</td>
+                            <td style="padding: 1rem; border-bottom: 1px solid var(--border-color); color: var(--text-primary);">${threat.name}</td>
+                            <td style="padding: 1rem; border-bottom: 1px solid var(--border-color);">
+                                <div style="display: flex; align-items: center; gap: 1rem;">
+                                    <input type="range" min="1" max="5" value="1" style="flex: 1; -webkit-appearance: none; height: 6px; border-radius: 3px; background: var(--surface-dark); outline: none;" onchange="updateRiskScore('${riskAssessment.id}', 'impact', this.value)">
+                                    <span style="min-width: 2rem; text-align: center; font-weight: 600; color: var(--primary-color);" id="impact_${riskAssessment.id}">1</span>
+                                </div>
+                                <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem;">1=Insignificant, 5=Catastrophic</div>
+                            </td>
+                            <td style="padding: 1rem; border-bottom: 1px solid var(--border-color);">
+                                <div style="display: flex; align-items: center; gap: 1rem;">
+                                    <input type="range" min="1" max="5" value="1" style="flex: 1; -webkit-appearance: none; height: 6px; border-radius: 3px; background: var(--surface-dark); outline: none;" onchange="updateRiskScore('${riskAssessment.id}', 'likelihood', this.value)">
+                                    <span style="min-width: 2rem; text-align: center; font-weight: 600; color: var(--primary-color);" id="likelihood_${riskAssessment.id}">1</span>
+                                </div>
+                                <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem;">1=Very Low, 5=Very High</div>
+                            </td>
+                            <td style="padding: 1rem; border-bottom: 1px solid var(--border-color);">
+                                <div style="display: inline-flex; align-items: center; justify-content: center; min-width: 4rem; height: 2.5rem; border-radius: var(--border-radius); font-weight: 600; font-size: 0.875rem; background: var(--success-color); color: white;" id="riskLevel_${riskAssessment.id}">Low</div>
+                            </td>
+                        </tr>
+                    `;
+                    
+                    riskId++;
+                });
+            });
+            
+            return rows;
+        }
+
+        function updateRiskScore(riskId, field, value) {
+            const risk = currentAssessment.riskAssessments.find(r => r.id === riskId);
+            if (risk) {
+                risk[field] = parseInt(value);
+                risk.riskLevel = getRiskLevel(risk.impact, risk.likelihood);
+                
+                // Update display
+                document.getElementById(`${field}_${riskId}`).textContent = value;
+                
+                const riskElement = document.getElementById(`riskLevel_${riskId}`);
+                riskElement.textContent = risk.riskLevel;
+                riskElement.style.background = getRiskColor(risk.riskLevel);
+                
+                // Auto-save changes
+                autoSaveAssessment();
+            }
+        }
+
+        // Risk Treatment functionality
+        function goToTreatment() {
+            generateTreatmentPlans();
+            updateProgressIndicator(4);
+            goToSection('treatmentSection');
+        }
+
+        const iso27001Controls = [
+            // Organizational controls (5.x)
+            { id: 'A.5.1', name: 'Information security policy and topic-specific policies' },
+            { id: 'A.5.2', name: 'Information security roles and responsibilities' },
+            { id: 'A.5.3', name: 'Segregation of duties' },
+            { id: 'A.5.4', name: 'Management responsibilities' },
+            { id: 'A.5.5', name: 'Contact with authorities' },
+            { id: 'A.5.6', name: 'Contact with special interest groups' },
+            { id: 'A.5.7', name: 'Threat intelligence' },
+            { id: 'A.5.8', name: 'Information security in project management' },
+            { id: 'A.5.9', name: 'Inventory of information and other associated assets' },
+            { id: 'A.5.10', name: 'Acceptable use of information and other associated assets' },
+            { id: 'A.5.11', name: 'Return of assets' },
+            { id: 'A.5.12', name: 'Classification of information' },
+            { id: 'A.5.13', name: 'Labelling of information' },
+            { id: 'A.5.14', name: 'Information transfer' },
+            { id: 'A.5.15', name: 'Access control' },
+            { id: 'A.5.16', name: 'Identity management' },
+            { id: 'A.5.17', name: 'Authentication information' },
+            { id: 'A.5.18', name: 'Access rights' },
+            { id: 'A.5.19', name: 'Information security in supplier relationships' },
+            { id: 'A.5.20', name: 'Addressing information security within supplier agreements' },
+            { id: 'A.5.21', name: 'Managing information security in the ICT supply chain' },
+            { id: 'A.5.22', name: 'Monitoring, review and change management of supplier services' },
+            { id: 'A.5.23', name: 'Information security for use of cloud services' },
+            { id: 'A.5.24', name: 'Information security incident management planning and preparation' },
+            { id: 'A.5.25', name: 'Assessment and decision on information security events' },
+            { id: 'A.5.26', name: 'Response to information security incidents' },
+            { id: 'A.5.27', name: 'Learning from information security incidents' },
+            { id: 'A.5.28', name: 'Collection of evidence' },
+            { id: 'A.5.29', name: 'Information security during disruption' },
+            { id: 'A.5.30', name: 'ICT readiness for business continuity' },
+            { id: 'A.5.31', name: 'Legal, statutory, regulatory and contractual requirements' },
+            { id: 'A.5.32', name: 'Intellectual property rights' },
+            { id: 'A.5.33', name: 'Protection of records' },
+            { id: 'A.5.34', name: 'Privacy and protection of PII' },
+            { id: 'A.5.35', name: 'Independent review of information security' },
+            { id: 'A.5.36', name: 'Compliance with policies, rules and standards for information security' },
+            { id: 'A.5.37', name: 'Documented operating procedures' },
+            
+            // People controls (6.x)
+            { id: 'A.6.1', name: 'Screening' },
+            { id: 'A.6.2', name: 'Terms and conditions of employment' },
+            { id: 'A.6.3', name: 'Information security awareness, education and training' },
+            { id: 'A.6.4', name: 'Disciplinary process' },
+            { id: 'A.6.5', name: 'Information security responsibilities after termination or change of employment' },
+            { id: 'A.6.6', name: 'Confidentiality or non-disclosure agreements' },
+            { id: 'A.6.7', name: 'Remote working' },
+            { id: 'A.6.8', name: 'Information security event reporting' },
+            
+            // Physical controls (7.x)
+            { id: 'A.7.1', name: 'Physical security perimeters' },
+            { id: 'A.7.2', name: 'Physical entry' },
+            { id: 'A.7.3', name: 'Protection against physical and environmental threats' },
+            { id: 'A.7.4', name: 'Physical security monitoring' },
+            { id: 'A.7.5', name: 'Protecting against physical and environmental threats' },
+            { id: 'A.7.6', name: 'Working in secure areas' },
+            { id: 'A.7.7', name: 'Clear desk and clear screen' },
+            { id: 'A.7.8', name: 'Equipment siting and protection' },
+            { id: 'A.7.9', name: 'Security of assets off-premises' },
+            { id: 'A.7.10', name: 'Storage media' },
+            { id: 'A.7.11', name: 'Supporting utilities' },
+            { id: 'A.7.12', name: 'Cabling security' },
+            { id: 'A.7.13', name: 'Equipment maintenance' },
+            { id: 'A.7.14', name: 'Secure disposal or reuse of equipment' },
+            
+            // Technological controls (8.x)
+            { id: 'A.8.1', name: 'User end point devices' },
+            { id: 'A.8.2', name: 'Privileged access rights' },
+            { id: 'A.8.3', name: 'Information access restriction' },
+            { id: 'A.8.4', name: 'Access to source code' },
+            { id: 'A.8.5', name: 'Secure authentication' },
+            { id: 'A.8.6', name: 'Capacity management' },
+            { id: 'A.8.7', name: 'Protection against malware' },
+            { id: 'A.8.8', name: 'Management of technical vulnerabilities' },
+            { id: 'A.8.9', name: 'Configuration management' },
+            { id: 'A.8.10', name: 'Information deletion' },
+            { id: 'A.8.11', name: 'Data masking' },
+            { id: 'A.8.12', name: 'Data leakage prevention' },
+            { id: 'A.8.13', name: 'Information backup' },
+            { id: 'A.8.14', name: 'Redundancy of information processing facilities' },
+            { id: 'A.8.15', name: 'Logging' },
+            { id: 'A.8.16', name: 'Monitoring activities' },
+            { id: 'A.8.17', name: 'Clock synchronization' },
+            { id: 'A.8.18', name: 'Use of utility programs' },
+            { id: 'A.8.19', name: 'Installation of software on operational systems' },
+            { id: 'A.8.20', name: 'Networks security management' },
+            { id: 'A.8.21', name: 'Security of network services' },
+            { id: 'A.8.22', name: 'Segregation of networks' },
+            { id: 'A.8.23', name: 'Web filtering' },
+            { id: 'A.8.24', name: 'Use of cryptography' },
+            { id: 'A.8.25', name: 'Secure development life cycle' },
+            { id: 'A.8.26', name: 'Application security requirements' },
+            { id: 'A.8.27', name: 'Secure system architecture and engineering principles' },
+            { id: 'A.8.28', name: 'Secure coding' },
+            { id: 'A.8.29', name: 'Security testing in development and acceptance' },
+            { id: 'A.8.30', name: 'Outsourced development' },
+            { id: 'A.8.31', name: 'Separation of development, testing and operational environments' },
+            { id: 'A.8.32', name: 'Change management' },
+            { id: 'A.8.33', name: 'Test information' },
+            { id: 'A.8.34', name: 'Protection of information systems during audit testing' }
+        ];
+
+        function generateTreatmentPlans() {
+            currentAssessment.treatmentPlans = [];
+            
+            let treatmentHTML = '';
+            
+            currentAssessment.riskAssessments.forEach(risk => {
+                const treatmentPlan = {
+                    riskId: risk.id,
+                    treatment: 'accept',
+                    controls: [],
+                    notes: ''
+                };
+                
+                currentAssessment.treatmentPlans.push(treatmentPlan);
+                
+                treatmentHTML += `
+                    <div style="background: var(--surface-light); padding: 1.5rem; border-radius: var(--border-radius); margin-bottom: 1rem;">
+                        <h4 style="margin-bottom: 1rem; color: var(--text-primary);">
+                            ${risk.asset.name} vs ${risk.threat.name}
+                            <span style="display: inline-flex; align-items: center; justify-content: center; min-width: 4rem; height: 1.5rem; border-radius: 6px; font-weight: 600; font-size: 0.75rem; background: ${getRiskColor(risk.riskLevel)}; color: white; margin-left: 0.5rem;">${risk.riskLevel}</span>
+                        </h4>
+                        <div class="form-group">
+                            <label class="form-label">Treatment Strategy:</label>
+                            <select class="form-select" onchange="updateTreatment('${risk.id}', this.value)">
+                                <option value="accept">Accept - Acknowledge and accept the risk</option>
+                                <option value="mitigate">Mitigate - Implement controls to reduce risk</option>
+                                <option value="transfer">Transfer - Share risk with third party</option>
+                                <option value="avoid">Avoid - Stop the activity causing risk</option>
+                            </select>
+                        </div>
+                        ${risk.threat.recommendedControls ? `
+                        <div id="recommended_${risk.id}" class="form-group" style="display: none;">
+                            <label class="form-label" style="color: var(--success-color);">📋 Recommended ISO 27001 Controls for ${risk.threat.name}:</label>
+                            <div style="background: var(--surface-dark); padding: 0.75rem; border-radius: 6px; font-size: 0.875rem;">
+                                ${risk.threat.recommendedControls.map(controlId => {
+                                    const control = iso27001Controls.find(c => c.id === controlId);
+                                    return control ? `<div style="margin-bottom: 0.25rem;"><strong>${control.id}</strong> - ${control.name}</div>` : '';
+                                }).join('')}
+                            </div>
+                        </div>
+                        ` : ''}
+                        <div id="controls_${risk.id}" class="form-group" style="display: none;">
+                            <label class="form-label">ISO 27001 Controls:</label>
+                            <select multiple class="form-select" style="height: 120px;" onchange="updateControls('${risk.id}', this)">
+                                ${generateControlOptions()}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Notes:</label>
+                            <textarea class="form-input" rows="3" placeholder="Add treatment notes or justification..." onchange="updateNotes('${risk.id}', this.value)"></textarea>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            document.getElementById('treatmentContainer').innerHTML = treatmentHTML;
+        }
+
+        function generateControlOptions() {
+            return iso27001Controls.map(control => 
+                `<option value="${control.id}">${control.id} - ${control.name}</option>`
+            ).join('');
+        }
+
+        function updateTreatment(riskId, treatment) {
+            const treatmentPlan = currentAssessment.treatmentPlans.find(t => t.riskId === riskId);
+            if (treatmentPlan) {
+                treatmentPlan.treatment = treatment;
+                
+                const controlsDiv = document.getElementById(`controls_${riskId}`);
+                const recommendedDiv = document.getElementById(`recommended_${riskId}`);
+                
+                if (treatment === 'mitigate') {
+                    controlsDiv.style.display = 'block';
+                    if (recommendedDiv) recommendedDiv.style.display = 'block';
+                    
+                    // Auto-select recommended controls for this threat
+                    const risk = currentAssessment.riskAssessments.find(r => r.id === riskId);
+                    if (risk && risk.threat.recommendedControls) {
+                        const controlSelect = document.querySelector(`#controls_${riskId} select`);
+                        if (controlSelect) {
+                            // Clear previous selections
+                            Array.from(controlSelect.options).forEach(option => option.selected = false);
+                            // Select recommended controls
+                            risk.threat.recommendedControls.forEach(controlId => {
+                                const option = controlSelect.querySelector(`option[value="${controlId}"]`);
+                                if (option) option.selected = true;
+                            });
+                            // Update treatment plan
+                            treatmentPlan.controls = risk.threat.recommendedControls.slice();
+                        }
+                    }
+                } else {
+                    controlsDiv.style.display = 'none';
+                    if (recommendedDiv) recommendedDiv.style.display = 'none';
+                    treatmentPlan.controls = [];
+                }
+                
+                // Auto-save changes
+                autoSaveAssessment();
+            }
+        }
+
+        function updateControls(riskId, selectElement) {
+            const treatmentPlan = currentAssessment.treatmentPlans.find(t => t.riskId === riskId);
+            if (treatmentPlan) {
+                treatmentPlan.controls = Array.from(selectElement.selectedOptions).map(option => option.value);
+                // Auto-save changes
+                autoSaveAssessment();
+            }
+        }
+
+        function updateNotes(riskId, notes) {
+            const treatmentPlan = currentAssessment.treatmentPlans.find(t => t.riskId === riskId);
+            if (treatmentPlan) {
+                treatmentPlan.notes = notes;
+                // Auto-save changes
+                autoSaveAssessment();
+            }
+        }
+
+        // Export functionality
+        function goToExport() {
+            generateAssessmentSummary();
+            updateProgressIndicator(5);
+            goToSection('exportSection');
+        }
+
+        function generateAssessmentSummary() {
+            const totalRisks = currentAssessment.riskAssessments.length;
+            const veryHighRisks = currentAssessment.riskAssessments.filter(r => r.riskLevel === 'Very High').length;
+            const highRisks = currentAssessment.riskAssessments.filter(r => r.riskLevel === 'High').length;
+            const moderateRisks = currentAssessment.riskAssessments.filter(r => r.riskLevel === 'Moderate').length;
+            const lowRisks = currentAssessment.riskAssessments.filter(r => r.riskLevel === 'Low').length;
+            const totalAssets = currentAssessment.assetThreatPairs.length;
+            const totalThreats = currentAssessment.assetThreatPairs.reduce((total, pair) => total + pair.threats.length, 0);
+            
+            const summaryHTML = `
+                <div style="background: var(--surface-light); padding: 1.5rem; border-radius: var(--border-radius); margin: 1rem 0; text-align: left;">
+                    <p><strong>Assessment:</strong> ${currentAssessment.name}</p>
+                    <p><strong>Total Risk Scenarios:</strong> ${totalRisks}</p>
+                    <p><strong>Very High Risk:</strong> <span style="color: #8B0000;">${veryHighRisks}</span></p>
+                    <p><strong>High Risk:</strong> <span style="color: var(--danger-color);">${highRisks}</span></p>
+                    <p><strong>Moderate Risk:</strong> <span style="color: var(--warning-color);">${moderateRisks}</span></p>
+                    <p><strong>Low Risk:</strong> <span style="color: var(--success-color);">${lowRisks}</span></p>
+                    <p><strong>Assets with Threats:</strong> ${totalAssets}</p>
+                    <p><strong>Total Threat Associations:</strong> ${totalThreats}</p>
+                </div>
+            `;
+            
+            document.getElementById('assessmentSummary').innerHTML = summaryHTML;
+        }
+
+        function exportToCSV() {
+            const csvData = [];
+            csvData.push(['Risk ID', 'Asset', 'Threat', 'Vulnerability', 'Impact', 'Likelihood', 'Risk Level', 'Treatment', 'Controls', 'Notes']);
+            
+            currentAssessment.riskAssessments.forEach(risk => {
+                const treatmentPlan = currentAssessment.treatmentPlans.find(t => t.riskId === risk.id);
+                const controls = treatmentPlan ? treatmentPlan.controls.join('; ') : '';
+                const notes = treatmentPlan ? treatmentPlan.notes : '';
+                const treatment = treatmentPlan ? treatmentPlan.treatment : 'accept';
+                
+                csvData.push([
+                    risk.id,
+                    risk.asset.name,
+                    risk.threat.name,
+                    'General vulnerability',
+                    risk.impact,
+                    risk.likelihood,
+                    risk.riskLevel,
+                    treatment,
+                    controls,
+                    notes
+                ]);
+            });
+            
+            const csvContent = csvData.map(row => row.map(cell => `"${cell}"`).join(',')).join('\n');
+            
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            link.setAttribute('href', url);
+            link.setAttribute('download', `${currentAssessment.name}_risk_register.csv`);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function showAssessmentSelectionModal(assessments) {
+            const modalHTML = `
+                <div id="assessmentSelectionModal" class="modal active">
+                    <div class="modal-content" style="max-width: 600px;">
+                        <div class="modal-header">
+                            <h3 class="modal-title">Load Existing Assessment</h3>
+                            <p>Select an assessment to load</p>
+                        </div>
+                        <div style="max-height: 400px; overflow-y: auto; margin-bottom: 1rem;">
+                            ${assessments.map(assessment => `
+                                <div class="item-checkbox" style="margin-bottom: 0.5rem; cursor: pointer;" onclick="loadSelectedAssessment('${assessment.id}')">
+                                    <div style="flex: 1;">
+                                        <div class="item-label">${assessment.name}</div>
+                                        <div class="item-description">
+                                            Created: ${new Date(assessment.createdAt).toLocaleDateString()}<br>
+                                            Updated: ${new Date(assessment.updatedAt).toLocaleDateString()}<br>
+                                            Assets: ${assessment.assetThreatPairs?.length || 0}, 
+                                            Risks: ${assessment.riskAssessments?.length || 0}
+                                        </div>
+                                    </div>
+                                    <div style="display: flex; gap: 0.5rem;">
+                                        <button class="btn btn-secondary" style="padding: 0.25rem 0.5rem; font-size: 0.75rem;" onclick="event.stopPropagation(); deleteSelectedAssessment('${assessment.id}')">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                        <div class="modal-actions">
+                            <button class="btn btn-secondary" onclick="closeAssessmentSelectionModal()">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.insertAdjacentHTML('beforeend', modalHTML);
+        }
+        
+        function closeAssessmentSelectionModal() {
+            const modal = document.getElementById('assessmentSelectionModal');
+            if (modal) {
+                modal.remove();
+            }
+        }
+        
+        async function loadSelectedAssessment(assessmentId) {
+            try {
+                // Validate assessment ID format
+                if (!assessmentId || typeof assessmentId !== 'string' || !/^[a-zA-Z0-9_-]+$/.test(assessmentId)) {
+                    throw new Error('Invalid assessment ID');
+                }
+                
+                // Load from localStorage with security validation
+                const localData = localStorage.getItem(`srat_assessment_${assessmentId}`);
+                
+                if (!localData) {
+                    throw new Error('Assessment not found');
+                }
+                
+                // Use secure JSON parsing
+                const assessment = SecurityUtils.safeJSONParse(localData);
+                
+                // Validate assessment data structure
+                SecurityUtils.validateAssessmentData(assessment);
+                
+                currentAssessment = assessment;
+                closeAssessmentSelectionModal();
+                
+                // Navigate to appropriate section based on assessment progress
+                if (assessment.riskAssessments && assessment.riskAssessments.length > 0) {
+                    if (assessment.treatmentPlans && assessment.treatmentPlans.length > 0) {
+                        updateProgressIndicator(5);
+                        goToSection('exportSection');
+                        generateAssessmentSummary();
+                    } else {
+                        updateProgressIndicator(4);
+                        goToSection('treatmentSection');
+                        generateTreatmentPlans();
+                    }
+                } else if (assessment.assetThreatPairs && assessment.assetThreatPairs.length > 0) {
+                    updateProgressIndicator(3);
+                    goToSection('assessmentSection');
+                    generateRiskMatrix();
+                } else {
+                    updateProgressIndicator(2);
+                    goToSection('selectionSection');
+                }
+                
+                // Refresh UI
+                populateAvailableAssetsList();
+                renderAssetThreatAssociations();
+                
+                alert('Assessment loaded successfully!');
+            } catch (error) {
+                console.error('Error loading assessment:', error);
+                alert('Error loading assessment: ' + error.message);
+            }
+        }
+        
+        async function deleteSelectedAssessment(assessmentId) {
+            if (!confirm('Are you sure you want to delete this assessment? This action cannot be undone.')) {
+                return;
+            }
+            
+            try {
+                // Delete from localStorage
+                localStorage.removeItem(`srat_assessment_${assessmentId}`);
+                
+                // Refresh the modal
+                closeAssessmentSelectionModal();
+                loadExistingAssessment();
+                
+            } catch (error) {
+                console.error('Error deleting assessment:', error);
+                alert('Error deleting assessment');
+            }
+        }
+
+        async function autoSaveAssessment() {
+            if (currentAssessment.id) {
+                try {
+                    // Validate assessment data before saving
+                    SecurityUtils.validateAssessmentData(currentAssessment);
+                    
+                    currentAssessment.updatedAt = new Date().toISOString();
+                    
+                    // Save to localStorage with size check
+                    const dataToSave = JSON.stringify(currentAssessment);
+                    if (dataToSave.length > 10 * 1024 * 1024) { // 10MB limit
+                        throw new Error('Assessment data too large to save');
+                    }
+                    
+                    localStorage.setItem(`srat_assessment_${currentAssessment.id}`, dataToSave);
+                    console.log('Auto-saved to localStorage');
+                } catch (error) {
+                    console.error('Auto-save failed:', error);
+                    // Don't alert for auto-save failures to avoid disrupting user workflow
+                }
+            }
+        }
+
+        function startNewAssessment() {
+            if (confirm('Are you sure you want to start a new assessment? Any unsaved changes will be lost.')) {
+                currentAssessment = {
+                    id: null,
+                    name: '',
+                    assetThreatPairs: [],
+                    riskAssessments: [],
+                    treatmentPlans: [],
+                    createdAt: null,
+                    updatedAt: null
+                };
+                location.reload();
+            }
+        }
+    </script>
+</body>
+</html>
