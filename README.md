@@ -1,6 +1,6 @@
 # SRAT - Simplified Risk Assessment Register & Treatment
 
-A modern, single-file web application that simplifies the ISO 27001-compliant risk assessment process for small to medium-sized businesses.
+A single-file web application that simplifies the ISO 27001-compliant risk assessment process. Build for fun and  "vibe coding".
 
 ## Features
 
